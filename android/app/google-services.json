@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "285978032149",
+    "firebase_url": "https://iraqify-2d6d7-default-rtdb.firebaseio.com",
+    "project_id": "iraqify-2d6d7",
+    "storage_bucket": "iraqify-2d6d7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:285978032149:android:9cbff3b95df3eb27bbb61c",
+        "android_client_info": {
+          "package_name": "com.iraqify"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "285978032149-dg36587idm7dcpq6km2rt64bn74usl8f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDnFLa6OptmDSNKdDMMek7qm7JWoWdTmiM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "285978032149-dg36587idm7dcpq6km2rt64bn74usl8f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
