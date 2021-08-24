@@ -1,3 +1,7 @@
 # Windows files
 [*.bat]
+<<<<<<< ours
 end_of_line = crlf
+=======
+end_of_line = crlf
+>>>>>>> theirs
