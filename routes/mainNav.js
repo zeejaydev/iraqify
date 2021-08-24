@@ -69,10 +69,10 @@ return(
       <NavigationContainer>
   
     <Stack.Navigator
-      headerMode='screen'
       screenOptions={{
           gestureEnabled:true,
           gestureDirection:'vertical',
+          headerMode:'screen',
           transitionSpec: {
               open: TransitionSpecs.RevealFromBottomAndroidSpec,
               close: closingConfig,
@@ -90,7 +90,6 @@ return(
               name='mainview'
               component={MainView}
               options={{
-                // header:()=>{return(<Header/>)}
                 headerShown:false
               }}
             />

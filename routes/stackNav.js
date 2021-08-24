@@ -94,8 +94,9 @@ export default function StackNav({navigation}){
 
     return (
         <Stack.Navigator 
-            headerMode='screen'
+            
             screenOptions={{
+                headerMode:'screen',
                 gestureEnabled:true,
                 gestureDirection:'horizontal',
                 cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS

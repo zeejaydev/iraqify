@@ -23,7 +23,7 @@ export default function BottomNav() {
               tabBarIcon: ({ focused, color, size }) => {
                 let iconName;
     
-                if (route.name === 'الفائمه الرئيسيه') {
+                if (route.name === 'القائمه الرئيسيه') {
                   iconName = focused
                     ? 'home'
                     : 'home';
@@ -36,6 +36,19 @@ export default function BottomNav() {
                 // You can return any component that you like here!
                 return <Icon name={iconName} style={{color:'#b3b3b3',fontSize:height<=600?20:30}} />;
               },
+              tabBarActiveTintColor: 'white',
+              tabBarInactiveTintColor: 'gray',
+              tabBarStyle:{
+                  backgroundColor:'#212121',
+                  borderTopColor:'#212121',
+                  shadowColor:'none',
+              },
+             tabBarLabelStyle:{
+                margin:0,
+                padding:0,
+                fontWeight:'bold'
+             },
+             headerShown:false
             })}
 
             tabBar={(props)=>(
@@ -45,26 +58,11 @@ export default function BottomNav() {
               </View>
             )}
 
-            tabBarOptions={{
-              labelStyle:{
-                margin:0,
-                padding:0,
-                fontWeight:'bold'
-              },
-              activeTintColor: '#fff',
-              inactiveTintColor: 'gray',
-              style:{
-                backgroundColor:'#212121',
-                borderTopColor:'#212121',
-                shadowColor:'none',
-                height:60,
-                
-              },
-            }}
-            bar
+            
+            
           >
            
-          <Tab.Screen name="الفائمه الرئيسيه" component={StackNav} />
+          <Tab.Screen name="القائمه الرئيسيه" component={StackNav} />
           <Tab.Screen name="بحث" component={SearchStack} />
           <Tab.Screen name="المكتبه" component={PlaylistStack} />
         </Tab.Navigator>

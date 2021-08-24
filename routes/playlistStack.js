@@ -30,8 +30,9 @@ const Header = ()=>{
 export default function PlaylistStack(){
     return (
         <Stack.Navigator 
-            headerMode='screen'
+            
             screenOptions={{
+                headerMode:'screen',
                 gestureEnabled:true,
                 gestureDirection:'horizontal',
                 // transitionSpec: {

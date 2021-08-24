@@ -21,8 +21,9 @@ const closingConfig = {
 export default function SearchStack(){
     return (
         <Stack.Navigator 
-            headerMode='screen'
+            
             screenOptions={{
+                headerMode:'screen',
                 gestureEnabled:true,
                 gestureDirection:'horizontal',
                 // transitionSpec: {

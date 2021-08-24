@@ -6,6 +6,7 @@ import {PlaylistInfoProvider} from './shared/playlistContext';
 import MainNav from "./routes/mainNav";
 import SplashScreen from 'react-native-splash-screen';
 import VersionCheck from 'react-native-version-check';
+
 // import TrackPlayer from 'react-native-track-player';
 const App = () => {
 
