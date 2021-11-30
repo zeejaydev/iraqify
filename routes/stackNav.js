@@ -42,7 +42,7 @@ export default function StackNav({navigation}){
         });
         
 
-      return ()=>subscribe()
+      return subscribe
     },[])
 
     function HeaderLeft (){

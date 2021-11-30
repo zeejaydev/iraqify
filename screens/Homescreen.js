@@ -123,9 +123,7 @@ export default function HomeScreen ({navigation}) {
 
   async function requestUserPermission() {
     const authStatus = await messaging().requestPermission();
-    const enabled =
-      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+    const enabled = authStatus === messaging.AuthorizationStatus.AUTHORIZED || authStatus === messaging.AuthorizationStatus.PROVISIONAL;
   
     if (enabled) {
       // const token = await messaging().getToken()

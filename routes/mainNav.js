@@ -57,7 +57,7 @@ export default function MainNav(){
         
       }
     });
-    return ()=>subscriber(); // unsubscribe on unmount
+    return subscriber; // unsubscribe on unmount
   }, []);
 
 

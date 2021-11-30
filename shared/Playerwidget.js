@@ -18,11 +18,30 @@ export default function PlayerWidget({navigation}){
 
 
     useEffect(() => { 
-        setup() 
+      async function setup() {
+        await TrackPlayer.setupPlayer();
+        await TrackPlayer.updateOptions({
+          stopWithApp: true,
+          capabilities: [
+            TrackPlayer.CAPABILITY_PLAY,
+            TrackPlayer.CAPABILITY_PAUSE,
+            TrackPlayer.CAPABILITY_STOP,
+            TrackPlayer.CAPABILITY_SKIP_TO_NEXT,
+            TrackPlayer.CAPABILITY_SKIP_TO_PREVIOUS
+          ],
+          compactCapabilities: [
+            TrackPlayer.CAPABILITY_PLAY,
+            TrackPlayer.CAPABILITY_PAUSE,
+            TrackPlayer.CAPABILITY_SKIP_TO_NEXT,
+            TrackPlayer.CAPABILITY_SKIP_TO_PREVIOUS,
+          ]
+        });
+      }
+      return setup
     }, []);
 
     useEffect(()=>{
-      updateTrackInfo()
+      return updateTrackInfo
     },[progress.duration,progress.position])
     
     const updateTrackInfo = async ()=>{
@@ -66,25 +85,7 @@ export default function PlayerWidget({navigation}){
 
       
 
-      async function setup() {
-        await TrackPlayer.setupPlayer();
-        await TrackPlayer.updateOptions({
-          stopWithApp: true,
-          capabilities: [
-            TrackPlayer.CAPABILITY_PLAY,
-            TrackPlayer.CAPABILITY_PAUSE,
-            TrackPlayer.CAPABILITY_STOP,
-            TrackPlayer.CAPABILITY_SKIP_TO_NEXT,
-            TrackPlayer.CAPABILITY_SKIP_TO_PREVIOUS
-          ],
-          compactCapabilities: [
-            TrackPlayer.CAPABILITY_PLAY,
-            TrackPlayer.CAPABILITY_PAUSE,
-            TrackPlayer.CAPABILITY_SKIP_TO_NEXT,
-            TrackPlayer.CAPABILITY_SKIP_TO_PREVIOUS,
-          ]
-        });
-      }
+
 
       const togglePause = async()=>{
          await TrackPlayer.pause();
