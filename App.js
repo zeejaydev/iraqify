@@ -2,6 +2,7 @@ import 'react-native-gesture-handler';
 import React,{useEffect} from 'react';
 import { StatusBar,Platform, Alert,SafeAreaView,BackHandler,Linking} from 'react-native';
 import {TrackInfoProvider} from './shared/Trackcontext';
+import {QueueManagementProvider} from './shared/queueManagementContext';
 import {PlaylistInfoProvider} from './shared/playlistContext';
 import MainNav from "./routes/mainNav";
 import SplashScreen from 'react-native-splash-screen';
@@ -58,9 +59,11 @@ const App = () => {
       <StatusBar barStyle={Platform.OS == 'ios' ? 'light-content':null} backgroundColor='transparent' translucent/>
 
       <TrackInfoProvider>
+        <QueueManagementProvider>
         <PlaylistInfoProvider>
         <MainNav/>
         </PlaylistInfoProvider>
+        </QueueManagementProvider>
       </TrackInfoProvider>
 
     </SafeAreaView>

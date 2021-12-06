@@ -1,14 +1,16 @@
-import React,{useEffect,useState} from "react";
+import React,{useEffect,useState,useContext} from "react";
 import { Text, View,StyleSheet,ScrollView,TouchableOpacity,ImageBackground,Image,Dimensions} from 'react-native';
 import {Icon} from 'native-base';
-import TrackPlayer, { usePlaybackState }  from 'react-native-track-player';
+import TrackPlayer, { usePlaybackState,Event }  from 'react-native-track-player';
 import firestore from '@react-native-firebase/firestore';
 import firebase from '@react-native-firebase/app';
 import FastImage from 'react-native-fast-image'
+import { QueueManagementContext } from "../shared/queueManagementContext";
 
 const {height}=Dimensions.get('window')
 
 export default function MyPlaylist ({route}) {
+    const [queManagement,setQueManagement]=useContext(QueueManagementContext);
     const user = firebase.auth().currentUser;
     const PlaylistName = route.params.item;
     const playbackState = usePlaybackState();
@@ -58,32 +60,43 @@ export default function MyPlaylist ({route}) {
         <Icon name='add' style={{color:'#fff',fontSize:20}} />
     </View>
     
-    const playPressed = async(item)=>{
-        
+    const playPressed = async(item,i)=>{
         const que = await TrackPlayer.getQueue();
-        
-        if(playbackState == null){
-            
+        const same = que.find((x,index)=>item.id===x.id && i ===index);
+        if(playbackState === 'idle' ){
             await TrackPlayer.add([...tracks2.Tracks]);
-            await TrackPlayer.skip(item.id).then(()=>TrackPlayer.play())
+            await TrackPlayer.skip(i).then(()=>TrackPlayer.play())
 
         }else if(que.length > 1){
-            
-            await TrackPlayer.skip(item.id).then(()=>TrackPlayer.play()).catch(async (e)=>{
-                
-                if(e.message ==='Given track ID was not found in queue'){
-                    await TrackPlayer.reset();
-                    await TrackPlayer.add([...tracks2.Tracks]);
-                    await TrackPlayer.skip(item.id).then(()=>TrackPlayer.play())
-                }else{
-                    console.log(e)
-                }
-
-            } )
+            //que not shuffled
+            if(queManagement.shuffled){
+                //if the que is shuffled
+                await TrackPlayer.reset();
+                await TrackPlayer.add([...tracks2.Tracks]);
+                await TrackPlayer.skip(i).then(()=>TrackPlayer.play())
+                setQueManagement({...queManagement,shuffled:false,shuffle:1})
+            }else if (same){
+                await TrackPlayer.skip(i).then(()=>TrackPlayer.play()).catch(async (e)=>{
+                    if(e.message ==='Given track ID was not found in queue'){
+                        await TrackPlayer.reset();
+                        await TrackPlayer.add([...tracks2.Tracks]);
+                        await TrackPlayer.skip(i).then(()=>TrackPlayer.play())
+                    }else{
+                        console.log(e)
+                    }
+                })
+            }
+            else{
+                await TrackPlayer.reset();
+                await TrackPlayer.add([...tracks2.Tracks]);
+                await TrackPlayer.skip(i).then(()=>TrackPlayer.play())
+                setQueManagement({...queManagement,shuffled:false,shuffle:1})
+            }
+           
         }else{
             await TrackPlayer.reset();
             await TrackPlayer.add([...tracks2.Tracks]);
-            await TrackPlayer.skip(item.id).then(()=>TrackPlayer.play())
+            await TrackPlayer.skip(i).then(()=>TrackPlayer.play())
         }
        
        
@@ -98,12 +111,14 @@ const editListPressed = ()=>{
     }
 }
 const playTheListPressed =async ()=>{
-
-    if(playbackState == null ){
+    
+    if(playbackState === 'idle' ){
+        
         await TrackPlayer.add([...tracks2.Tracks])
         await TrackPlayer.play()
         
     }else {
+        
         await TrackPlayer.reset()
         await TrackPlayer.add([...tracks2.Tracks])
         await TrackPlayer.play()
@@ -223,7 +238,7 @@ const styles = StyleSheet.create({
                         <View style={{flex:1,minWidth:'100%',flexDirection:'row',marginVertical:8}} key={index}>
                             <View style={{marginLeft:20,alignItems:'center',justifyContent:'center'}}>
                                 <TouchableOpacity 
-                                onPress={()=>playPressed(item)}
+                                onPress={()=>playPressed(item,index)}
                                 >
                                     <Icon name='play' style={{color:'#fff',fontSize:height<=544?20:30}} />
                                 </TouchableOpacity>

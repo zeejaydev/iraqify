@@ -36,7 +36,7 @@ useEffect(()=>{
         setlist2(playlistsNames)
     });
  
-    return ()=>subscribe()
+    return subscribe
 
 },[])
 
@@ -71,9 +71,7 @@ useEffect(()=>{
 
 // adding the selected song to a playlist
     const addToplaylistPressed = (id)=>{
-        
         const Trackobj = route.params.TrackObj
-        
         firebase.firestore().collection('Users').doc(user.uid).collection('Playlists').doc(id).update({
             Tracks : firebase.firestore.FieldValue.arrayUnion(Trackobj)
         }).catch(e=>console.log(e))
@@ -128,7 +126,7 @@ useEffect(()=>{
   
   const songAddedConfimation = ()=>{
     setModalVisible(true)
-    setTimeout(()=>{setModalVisible(false),navigation.navigate('SongScreen')}, 1000)
+    setTimeout(()=>{setModalVisible(false),navigation.navigate({name:'SongScreen',merge:true})}, 1000)
   }
 
 

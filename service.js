@@ -1,24 +1,37 @@
-import TrackPlayer from 'react-native-track-player';
-
+import TrackPlayer, {Event, State} from 'react-native-track-player';
+let wasPausedByDuck = false;
 
 module.exports = async function () {
-    TrackPlayer.addEventListener('remote-play', () => {
+    TrackPlayer.addEventListener(Event.RemotePlay, () => {
       TrackPlayer.play();
       });
-    TrackPlayer.addEventListener('remote-duck', () => {
+    TrackPlayer.addEventListener(Event.RemoteDuck, async e => {
+      if (e.permanent === true) {
         TrackPlayer.pause();
-      });
+      } else {
+        if (e.paused === true) {
+          const playerState = await TrackPlayer.getState();
+          wasPausedByDuck = playerState !== State.Paused;
+          TrackPlayer.pause();
+        } else {
+          if (wasPausedByDuck === true) {
+            TrackPlayer.play();
+            wasPausedByDuck = false;
+          }
+        }
+      }
+    });
       
-      TrackPlayer.addEventListener('remote-pause', () => {
+      TrackPlayer.addEventListener(Event.RemotePause, () => {
        TrackPlayer.pause();
        
       });
       
-      TrackPlayer.addEventListener('remote-stop', () => {
+      TrackPlayer.addEventListener(Event.RemoteStop, () => {
         TrackPlayer.stop();
       });
       
-      TrackPlayer.addEventListener('remote-next', async() => {  
+      TrackPlayer.addEventListener(Event.RemoteNext, async() => {  
           
        try{
         await TrackPlayer.skipToNext()
@@ -28,7 +41,7 @@ module.exports = async function () {
       
       });
       
-      TrackPlayer.addEventListener('remote-previous', async() => {
+      TrackPlayer.addEventListener(Event.RemotePrevious, async() => {
 
         try{
           await TrackPlayer.skipToPrevious()
@@ -36,10 +49,6 @@ module.exports = async function () {
           console.log('on first track')
         }
         
-      });
-      
-      TrackPlayer.addEventListener('playback-queue-ended', async () => { 
-        TrackPlayer.stop()
       });
 
    

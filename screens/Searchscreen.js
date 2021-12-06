@@ -40,7 +40,7 @@ export default function SearchScreen ({navigation}) {
   const playSelectedSong = async (trackOb)=>{
 
   
-    if(playbackState == null){
+    if(playbackState === 'idle'){
       await TrackPlayer.add({
           id: trackOb.id,
           url: trackOb.url,

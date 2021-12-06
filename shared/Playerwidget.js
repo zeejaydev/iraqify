@@ -1,91 +1,107 @@
 import React,{useEffect,useState,useContext} from 'react';
-import {View,Text,StyleSheet,TouchableOpacity,Dimensions} from 'react-native';
+import {View,Text,StyleSheet,TouchableOpacity,Dimensions,ActivityIndicator} from 'react-native';
 import { Icon } from "native-base";
-import TrackPlayer,{usePlaybackState,useTrackPlayerProgress, useTrackPlayerEvents } from 'react-native-track-player';
+import TrackPlayer,{usePlaybackState,useProgress, useTrackPlayerEvents,Capability,State,Event } from 'react-native-track-player';
 import { TrackContext } from "../shared/Trackcontext";
 import TextTicker from 'react-native-text-ticker';
 
 const {width,height}=Dimensions.get('window')
-const bottom =  height <= 750 ? height/15 : height/12
 
 
 
 export default function PlayerWidget({navigation}){
 
-    const [trackInfo,setTrackInfo]=useContext(TrackContext);
+    // const [trackInfo,setTrackInfo]=useContext(TrackContext);
+    const [trackInfo,setTrackInfo]=useState({
+      arttistName:'',
+      songTitle:'',
+      artwork:'',
+      position:0,
+      duration:0
+  });
     const playbackState = usePlaybackState();
-    const progress = useTrackPlayerProgress(150);
+    const progress = useProgress(150);
 
-
-    useEffect(() => { 
+    useEffect(() => {
       async function setup() {
         await TrackPlayer.setupPlayer();
         await TrackPlayer.updateOptions({
           stopWithApp: true,
           capabilities: [
-            TrackPlayer.CAPABILITY_PLAY,
-            TrackPlayer.CAPABILITY_PAUSE,
-            TrackPlayer.CAPABILITY_STOP,
-            TrackPlayer.CAPABILITY_SKIP_TO_NEXT,
-            TrackPlayer.CAPABILITY_SKIP_TO_PREVIOUS
+            Capability.Play,
+            Capability.Pause,
+            Capability.SkipToNext,
+            Capability.SkipToPrevious,
+            Capability.Stop,
           ],
           compactCapabilities: [
-            TrackPlayer.CAPABILITY_PLAY,
-            TrackPlayer.CAPABILITY_PAUSE,
-            TrackPlayer.CAPABILITY_SKIP_TO_NEXT,
-            TrackPlayer.CAPABILITY_SKIP_TO_PREVIOUS,
+            Capability.Play, 
+            Capability.Pause,
+            Capability.SkipToNext,
+            Capability.SkipToPrevious,
           ]
         });
       }
       return setup
     }, []);
 
+    // const events = [
+    //   Event.PlaybackTrackChanged,
+    //   Event.PlaybackQueueEnded
+    // ];
+    // useTrackPlayerEvents(events, async (event) => {
+    //   if (event.type === Event.PlaybackTrackChanged) {
+    //       if(event.nextTrack===0 ||event.nextTrack>0){
+    //         // console.log('0 or > 0 coming from playerwidget.js line54')
+    //         const track = await TrackPlayer.getTrack(event.nextTrack);
+            
+    //         const { title, artist, artwork,id,duration} = track || {};
+    //         if(title == undefined || artwork==undefined || artist==undefined ){
+    //           setTrackInfo({songTitle:'',artistName:'',artwork:'',duration:0,position:0})
+              
+    //         }else{
+    //           setTrackInfo({...trackInfo,songTitle:title,artistName:artist,artwork:artwork,duration:duration})
+    //           await TrackPlayer.setVolume(1)
+            
+    //         }
+    //       }else{
+    //         setTrackInfo({songTitle:'',artistName:'',artwork:'https://zeejaydev.com/iraqify/artworks/nosong.jpeg',duration:0,position:0})
+    //       }
+        
+    //     }else if(event.type === Event.PlaybackQueueEnded){
+          
+    //       setTrackInfo({songTitle:'',artistName:'',artwork:'https://zeejaydev.com/iraqify/artworks/nosong.jpeg',duration:0,position:0})
+    //     }
+
+    //   });
+    
+    useTrackPlayerEvents([Event.PlaybackQueueEnded], async event => {
+      if (
+        event.type === Event.PlaybackQueueEnded &&
+        event.nextTrack == undefined
+      ) {
+        await TrackPlayer.seekTo(0).then(()=>TrackPlayer.pause())
+      }
+    });
+    
     useEffect(()=>{
+      
+      const updateTrackInfo = async ()=>{
+        const trackid = await TrackPlayer.getCurrentTrack()
+        if(trackid===0||trackid>0){
+          const track = await TrackPlayer.getTrack(trackid)
+          
+          setTrackInfo({...trackInfo,artistName:track.artist,songTitle:track.title,position:progress.position,duration:progress.duration})
+        }else{
+          return null
+        }
+      }
+      
       return updateTrackInfo
+
     },[progress.duration,progress.position])
     
-    const updateTrackInfo = async ()=>{
-      const trackid = await TrackPlayer.getCurrentTrack()
-      
-      if(trackid){
-        const track = await TrackPlayer.getTrack(trackid)
-        setTrackInfo({...trackInfo,artistName:track.artist,songTitle:track.title,position:progress.position,duration:progress.duration})
-      }else{
-        return null
-      }
-    }
-
-    useTrackPlayerEvents(["playback-track-changed","playback-queue-ended"], async event => {
-        
-      if (event.type === TrackPlayer.TrackPlayerEvents.PLAYBACK_TRACK_CHANGED) {
-          
-          
-          if(event.nextTrack){
-            const track = await TrackPlayer.getTrack(event.nextTrack);
-            const { title, artist, artwork,id,duration} = track || {};
-            if(title == undefined || artwork==undefined || artist==undefined ){
-              setTrackInfo({songTitle:'',artistName:'',artwork:'',duration:0,position:0})
-              
-            }else{
-              setTrackInfo({...trackInfo,songTitle:title,artistName:artist,artwork:artwork,duration:duration})
-              await TrackPlayer.setVolume(1)
-            
-            }
-          }else{
-            setTrackInfo({songTitle:'',artistName:'',artwork:'https://zeejaydev.com/iraqify/artworks/nosong.jpeg',duration:0,position:0})
-          }
-        
-        }else if(event.type === TrackPlayer.TrackPlayerEvents.PLAYBACK_QUEUE_ENDED){
-          
-          setTrackInfo({songTitle:'',artistName:'',artwork:'https://zeejaydev.com/iraqify/artworks/nosong.jpeg',duration:0,position:0})
-        }
-
-      });
-
-
-      
-
-
+    
 
       const togglePause = async()=>{
          await TrackPlayer.pause();
@@ -94,10 +110,9 @@ export default function PlayerWidget({navigation}){
       }
       
       const togglePlay = async()=>{
-         await TrackPlayer.play();
+        await TrackPlayer.play();
         //  setIsPlaying(true)
       }
-      
 
       const songInfo = `${trackInfo.songTitle} - ${trackInfo.artistName}  `
     return(
@@ -147,17 +162,23 @@ export default function PlayerWidget({navigation}){
             </View>
             
             {
-                playbackState===TrackPlayer.STATE_PLAYING ?
+                playbackState==='loading'||playbackState==='buffering'||playbackState==='ready'||playbackState===8
+                ||playbackState===6?
+                <TouchableOpacity style={{padding:8}} onPress={togglePause}>
+                  <ActivityIndicator color='#fff'/>
+                </TouchableOpacity>
+                :
+                playbackState===State.Playing ?
                 <TouchableOpacity style={{padding:8}} onPress={togglePause}>
                     <Icon name='pause-circle-outline' style={{color:'#fff',fontSize:height<=600?20:30}} />
                 </TouchableOpacity>
                 :
-                playbackState===TrackPlayer.STATE_PAUSED?
+                playbackState===State.Paused?
                 <TouchableOpacity style={{padding:8}} onPress={togglePlay}>
                     <Icon name='play-circle-outline' style={{color:'#fff',fontSize:height<=600?20:30}} />
                 </TouchableOpacity>
                 :
-                <TouchableOpacity style={{padding:8}} onPress={togglePlay}>
+                <TouchableOpacity style={{padding:8}} onPress={togglePlay} disabled={playbackState===1?true:false}>
                     <Icon name='play-circle-outline' style={{color:'#fff',fontSize:height<=600?20:30}} />
                 </TouchableOpacity>
             }

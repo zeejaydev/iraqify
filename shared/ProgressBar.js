@@ -1,11 +1,11 @@
 import React from "react";
 import {StyleSheet,View,Text} from "react-native";
-import  {useTrackPlayerProgress} from "react-native-track-player";
+import  {useProgress} from "react-native-track-player";
 
 
 export default function ProgressBar(){
     
-    const progress = useTrackPlayerProgress(190);
+    const progress = useProgress(190);
     
     if(progress.duration && progress.position > 0){
         return(

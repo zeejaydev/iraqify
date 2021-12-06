@@ -1,14 +1,15 @@
-import React,{useEffect,useState} from "react";
-import { Text, View, StyleSheet,TouchableOpacity,Image,ImageBackground,ScrollView} from 'react-native';
+import React,{useEffect,useState,useContext} from "react";
+import { Text, View, StyleSheet,TouchableOpacity,ScrollView} from 'react-native';
 import firestore from '@react-native-firebase/firestore'
 import {Icon} from 'native-base';
 import TrackPlayer, { usePlaybackState }  from 'react-native-track-player';
 import FastImage from 'react-native-fast-image';
-
+import { QueueManagementContext } from "../shared/queueManagementContext";
+    
 export default function AlbumScreen ({route}) {
   const [data,setData]=useState([])
   const playbackState = usePlaybackState();
-
+  const [queManagement,setQueManagement]=useContext(QueueManagementContext);
 
   useEffect(()=>{
     firestore().collection(route.params.name).get().then((querSnapshot)=>{
@@ -20,7 +21,7 @@ export default function AlbumScreen ({route}) {
     
   const playTheListPressed =async ()=>{
 
-    if(playbackState == null ){
+    if(playbackState === 'idle' ){
         await TrackPlayer.add([...data.Tracks])
         await TrackPlayer.play()
         
@@ -33,32 +34,44 @@ export default function AlbumScreen ({route}) {
 }
 
 
-const playPressed = async(item)=>{
+const playPressed = async(item,i)=>{
         
   const que = await TrackPlayer.getQueue();
-  
-  if(playbackState == null){
+  const same = que.find((x,index)=>item.id===x.id && i ===index);
+  if(playbackState === 'idle'){
       
       await TrackPlayer.add([...data.Tracks]);
-      await TrackPlayer.skip(item.id).then(()=>TrackPlayer.play())
+      await TrackPlayer.skip(i).then(()=>TrackPlayer.play())
+      
 
   }else if(que.length > 1){
-      
-      await TrackPlayer.skip(item.id).then(()=>TrackPlayer.play()).catch(async (e)=>{
-          
-          if(e.message ==='Given track ID was not found in queue'){
-              await TrackPlayer.reset();
-              await TrackPlayer.add([...data.Tracks]);
-              await TrackPlayer.skip(item.id).then(()=>TrackPlayer.play())
-          }else{
-              console.log(e)
-          }
-
-      } )
+      //que not shuffled
+      if(queManagement.shuffled){
+        //if the que is shuffled
+        await TrackPlayer.reset();
+        await TrackPlayer.add([...data.Tracks]);
+        await TrackPlayer.skip(i).then(()=>TrackPlayer.play())
+        setQueManagement({...queManagement,shuffled:false,shuffle:1})
+      }else if (same){
+          await TrackPlayer.skip(i).then(()=>TrackPlayer.play()).catch(async (e)=>{
+              if(e.message ==='Given track ID was not found in queue'){
+                  await TrackPlayer.reset();
+                  await TrackPlayer.add([...data.Tracks]);
+                  await TrackPlayer.skip(i).then(()=>TrackPlayer.play())
+              }else{
+                  console.log(e)
+              }
+          })
+      }else{
+        await TrackPlayer.reset();
+        await TrackPlayer.add([...data.Tracks]);
+        await TrackPlayer.skip(i).then(()=>TrackPlayer.play())
+        setQueManagement({...queManagement,shuffled:false,shuffle:1})
+    }
   }else{
       await TrackPlayer.reset();
       await TrackPlayer.add([...data.Tracks]);
-      await TrackPlayer.skip(item.id).then(()=>TrackPlayer.play())
+      await TrackPlayer.skip(i).then(()=>TrackPlayer.play())
   }
  
  
@@ -100,7 +113,7 @@ const playPressed = async(item)=>{
                     <View style={{flex:1,minWidth:'100%',flexDirection:'row'}} key={index}>
                             <View style={{marginLeft:20}}>
                                 <TouchableOpacity 
-                                onPress={()=>playPressed(item)}
+                                onPress={()=>playPressed(item,index)}
                                 >
                                     <Icon name='play' style={{color:'#fff'}} />
                                 </TouchableOpacity>

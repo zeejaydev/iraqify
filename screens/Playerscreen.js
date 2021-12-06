@@ -1,29 +1,43 @@
 import React,{useEffect,useState,useContext} from 'react';
-import { View,Text, StyleSheet,Image,Dimensions,TouchableOpacity,Platform } from "react-native";
-import TrackPlayer,{useTrackPlayerProgress,usePlaybackState}  from 'react-native-track-player';
+import { View,Text, StyleSheet,Image,Dimensions,TouchableOpacity } from "react-native";
+import TrackPlayer,{useProgress,usePlaybackState,State,RepeatMode,useTrackPlayerEvents,Event}  from 'react-native-track-player';
 import {Icon} from 'native-base';
 import Slider from "@brlja/react-native-slider";
 import { TrackContext } from "../shared/Trackcontext";
+import { QueueManagementContext } from "../shared/queueManagementContext";
 
 
 export default function PlayerScreen(){
 
     const [trackInfo,setTrackInfo]=useContext(TrackContext);
+    const [queManagement,setQueManagement]=useContext(QueueManagementContext);
     const {height,width} = Dimensions.get('window');
-    
     const [isSeeking,setIsSeeking]=useState(false);
     const [sliderDis,setSliderDis]=useState(false)
-    const [isPlaying,setIsPlaying] = useState(false)
-    const [isPaused,setIsPaused] = useState(false)
-    
-    const [disable,setDisable] = useState(true);
     const [disableNext,setDisableNext] = useState(true);
     const [disablePrev,setDisablePrev] = useState(true);
-
-    const [currentTrack,setCurrentTrack] = useState({artistName:'No Artist',songTitle:'No Song Playing',artwork:'https://zeejaydev.com/iraqify/artworks/nosong.jpeg'})
+    const [disableShuffle,setDisableShuffle] = useState(true);
+    
+    const [currentTrack,setCurrentTrack] = useState(async()=>{
+        const cTrack = await TrackPlayer.getCurrentTrack()
+        const getQue = await TrackPlayer.getQueue()
+        
+        if(cTrack!==null){
+            const trackInf = await TrackPlayer.getTrack(cTrack);
+            if(getQue.length > 1){
+                setDisableNext(false)
+                setDisablePrev(false)
+                setDisableShuffle(false)
+            }
+            setCurrentTrack({artistName:trackInf.artist,songTitle:trackInf.title,artwork:trackInf.artwork,duration:trackInf.duration})
+        }else{
+            setCurrentTrack({artistName:'No Artist',songTitle:'No Song Playing',artwork:'https://zeejaydev.com/iraqify/artworks/nosong.jpeg'})
+            setSliderDis(true)
+        }
+    })
 
     const playBackState = usePlaybackState();
-    const {position,duration}=useTrackPlayerProgress(100);
+    const {position,duration}=useProgress(100);
     const [sliderValue,setSliderValue]=useState(()=>{
         if(trackInfo.position>0){
             return trackInfo.position/trackInfo.duration
@@ -37,22 +51,7 @@ export default function PlayerScreen(){
         imgHeight:250,
         aspectR:height>=1000?10/5:10/8
     })
-    
-    const durationMin = Math.floor(duration / 60);
-    const  durationSec = (duration  - durationMin * 60).toFixed(0);
-    
-    const TdurationMin = Math.floor(trackInfo.duration / 60);
-    const  TdurationSec = (trackInfo.duration  - TdurationMin * 60).toFixed(0);
-
-    const positionMin = Math.floor(position / 60);
-    const  positionSec = (position  - positionMin * 60).toFixed(0);
-    
-    const TpositionMin = Math.floor(trackInfo.position / 60);
-    const  TpositionSec = (trackInfo.position  - TpositionMin * 60).toFixed(0);
-    
    
-
-
     useEffect(()=>{
         
         const getWindowHeight = ()=>{
@@ -64,59 +63,29 @@ export default function PlayerScreen(){
                 return
             }
         }
-
-        const getPlayingStatus = ()=>{
-            if(playBackState===TrackPlayer.STATE_PLAYING){
-                setIsPlaying(true)
-                
-            }else if(playBackState===TrackPlayer.STATE_PAUSED){
-                setDisable(false)
-                setIsPaused(true)
-                setIsPlaying(false)
-            }else{
-                setIsPlaying(false)
-              
-            }
-        }
-
-
-        const getCurrentTrack = async ()=>{
-            
-            const currenttrack = await TrackPlayer.getCurrentTrack();
-            
-            if(currenttrack  == null){
-                setCurrentTrack({artistName:'No Artist',songTitle:'No Song Playing',artwork:'https://zeejaydev.com/iraqify/artworks/nosong.jpeg'})
-                setIsPlaying(false)
-                setSliderDis(true)
-             }else{
-                
-                const trackId = await TrackPlayer.getCurrentTrack();
-                const trackInf = await TrackPlayer.getTrack(trackId);
-                
-                setCurrentTrack({artistName:trackInf.artist,songTitle:trackInf.title,artwork:trackInf.artwork,duration:trackInf.duration})
-                setSliderDis(false)
-
-                const getQue = await TrackPlayer.getQueue()
-
-                if(getQue.length > 1){
-                    setDisableNext(false)
-                    setDisablePrev(false)
-                }
-                
-             }
-        }
-    
+        
             getWindowHeight()
-            getPlayingStatus()
-            getCurrentTrack()
        
-    },[playBackState])
+    },[])
+    
+    useTrackPlayerEvents([Event.PlaybackTrackChanged,Event.PlaybackQueueEnded], async event => {
+      if (
+        event.type === Event.PlaybackTrackChanged &&
+        event.nextTrack !== undefined
+      ) {
+        const track = await TrackPlayer.getTrack(event.nextTrack);
+        const {title, artist, artwork,duration} = track || {};
+        setCurrentTrack({artistName:artist,songTitle:title,artwork:artwork})
+      }else if(event.type ===Event.PlaybackQueueEnded){
+          await TrackPlayer.seekTo(0).then(()=>TrackPlayer.pause())
+          setSliderValue(0)
+      }
+    });
 
     useEffect(()=>{
         if(!isSeeking && position && duration){
             setSliderValue(position/duration)
         } 
-       
     },[position,duration])
    
   
@@ -126,7 +95,7 @@ export default function PlayerScreen(){
 
     const slidingCompleted = async value=>{
 
-        if(playBackState===TrackPlayer.STATE_PAUSED){
+        if(playBackState===State.Paused){
             await TrackPlayer.seekTo(value * trackInfo.duration).then(()=>{
                 setSliderValue(value)
                 setIsSeeking(false)
@@ -147,11 +116,48 @@ export default function PlayerScreen(){
 
     const playPressed = async()=>{
         await TrackPlayer.play();
-        setIsPlaying(true)
     }
     const pausePressed = async()=>{
         await TrackPlayer.pause();
-        setIsPlaying(false)
+    }
+
+    const shufflePressed = async()=>{
+        const que = await TrackPlayer.getQueue()
+        if(que.length > 1){
+            if(queManagement.shuffle===1){
+                if(queManagement.repeat>1){setQueManagement({...queManagement,repeat:1})}
+                setQueManagement({...queManagement,shuffle:queManagement.shuffle+1,shuffled:true})
+                console.log(queManagement.shuffle+'Shuffle on: coming from Playerscreen.js Shuffle fun')
+                const shuffled = que.map((value) => ({ value, sort: Math.random() }))
+                .sort((a, b) => a.sort - b.sort)
+                .map(({ value }) => value)
+                await TrackPlayer.reset()
+                await TrackPlayer.add(shuffled).then(()=>TrackPlayer.play())
+            }else{
+                console.log(queManagement.shuffle+'Shuffle off: coming from Playerscreen.js Shuffle fun')
+                setQueManagement({...queManagement,shuffle:1})
+                
+            }
+        }else{
+            console.log('NO QUEUE: coming from Playerscreen.js Shuffle fun')
+        }
+    }
+    const repeatPressed= async()=>{
+        // console.log(queManagement.repeat)
+        if(queManagement.repeat===1){
+            //repeate track
+            setQueManagement({...queManagement,repeat:queManagement.repeat+1})
+            await TrackPlayer.setRepeatMode(RepeatMode.Track)
+            return
+        }
+        if(queManagement.repeat===2){
+            //repeat queue
+            setQueManagement({...queManagement,repeat:queManagement.repeat+1})
+            await TrackPlayer.setRepeatMode(RepeatMode.Queue)
+        }else{
+            await TrackPlayer.setRepeatMode(RepeatMode.Off)
+            setQueManagement({...queManagement,repeat:1})
+        }
     }
     const playNext = async()=>{
 
@@ -159,9 +165,8 @@ export default function PlayerScreen(){
             
             await TrackPlayer.skipToNext();
             await TrackPlayer.play()
-            setIsPlaying(true)
         }catch{
-            console.log('last track')
+            console.log('last track: coming from Playerscreen.js')
         }
     }
     const playPrev = async()=>{
@@ -169,9 +174,8 @@ export default function PlayerScreen(){
         try{
             await TrackPlayer.skipToPrevious();
             await TrackPlayer.play()
-            setIsPlaying(true)
         }catch{
-            console.log('on first track')
+            console.log('on first track: coming from Playerscreen.js')
         }
         
     }
@@ -241,14 +245,16 @@ export default function PlayerScreen(){
             color:'white',
             marginRight:5,
             fontWeight:'bold',
-            fontSize:height<=600?11:17
+            fontSize:height<=600?11:15
+        },
+        repeatbutton:{
+            position:'absolute',
+            color:'white',
+            top:-2,
+            left:5
         }
     })
-
-  
-    
-
-        return(
+    return(
             <View style={{flex:1}}>
                 <View style={styles.container} >
                     
@@ -266,21 +272,9 @@ export default function PlayerScreen(){
                     <View style={styles.progressBar}>
 
                                 <View>
-                                   { playBackState===TrackPlayer.STATE_PLAYING 
-                                   ?
                                     <Text style={styles.durationText}>
-                                        {positionMin}:{positionSec < 10 ? '0'+positionSec:positionSec}
-                                    </Text> 
-                                    :
-                                    isPaused
-                                    ?
-                                        <Text style={styles.durationText}>
-                                            {TpositionMin}:{TpositionSec < 10 ? '0'+TpositionSec:TpositionSec}
-                                        </Text>
-                                    :
-                                    <Text style={styles.durationText}>0:00</Text>
-                                    
-                                    }
+                                        {new Date(position * 1000).toISOString().substr(14, 5)}
+                                    </Text>
                                 </View>
 
                     
@@ -300,50 +294,51 @@ export default function PlayerScreen(){
                                     </View>
                                    
 
-                                {
-                                    isPlaying
-                                    ?
-                                   
-                                        <Text style={styles.durationText}>
-                                            {durationMin}:{durationSec<10?'0'+durationSec:durationSec}
-                                        </Text>
-                                   
-                                    :
-                                    isPaused
-                                    
-                                    ?
-                                        <Text style={styles.durationText}>
-                                            {TdurationMin}:{TdurationSec<10?'0'+TdurationSec:TdurationSec}
-                                        </Text>
-                                    :
-                                        <Text style={styles.durationText}>0:00</Text>
-                                 
-                                }
+
+                                    <Text style={styles.durationText}>
+                                        {new Date((duration - position) * 1000).toISOString().substr(14, 5)}
+                                    </Text>
 
                     </View>
     
                     <View style={styles.controlers}>
+                        <View style={{marginHorizontal:8}}>
+                            <TouchableOpacity onPress={shufflePressed} disabled={disableShuffle}>
+                                <Icon name="ios-shuffle-sharp" style={{color:queManagement.shuffle===1?'gray':'white',fontSize:height<=600?30:50}}/>
+                            </TouchableOpacity>
+                        </View>
                         <View>
                             <TouchableOpacity onPress={playPrev} disabled={disablePrev}>
                                 <Icon name="play-skip-back" style={{color:disablePrev?'gray':'#fff',fontSize:height<=600?30:50}}/>
                             </TouchableOpacity>
                             
                         </View>
-                        <View style={{marginHorizontal:25}}>
+                        <View style={{marginHorizontal:10}}>
                            {
-                               !isPlaying?
-                                <TouchableOpacity onPress={playPressed} disabled={disable}>
+                               playBackState===State.Paused?
+                               <TouchableOpacity onPress={playPressed} disabled={playBackState===State.Paused?false:true}>
                                     <Icon name='play-circle-outline' style={{color:'white',fontSize:height<=600?60:100}}/>
                                 </TouchableOpacity>
-                                :
+                                
+                                :playBackState===State.Playing?
                                 <TouchableOpacity onPress={pausePressed} >
                                     <Icon name='pause-circle-outline' style={{color:'white',fontSize:height<=600?60:100}}/>
+                                </TouchableOpacity>
+                                :
+                                <TouchableOpacity onPress={playPressed} disabled={playBackState===State.Paused?false:true}>
+                                    <Icon name='play-circle-outline' style={{color:'white',fontSize:height<=600?60:100}}/>
                                 </TouchableOpacity>
                            }
                         </View>
                         <View>
                             <TouchableOpacity onPress={playNext} disabled={disableNext}>
                                 <Icon name="play-skip-forward" style={{color:disableNext?'gray':'#fff',fontSize:height<=600?30:50}}/>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={{marginHorizontal:8}}>
+                            <TouchableOpacity onPress={repeatPressed}>
+                                {queManagement.repeat > 2?<Text style={styles.repeatbutton}>2</Text>:null}
+                                <Icon name="ios-repeat-sharp" style={{color:queManagement.repeat>1?'#fff':'gray',fontSize:height<=600?30:50}}/>
                             </TouchableOpacity>
                         </View>
                     </View>

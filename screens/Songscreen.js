@@ -14,7 +14,7 @@ export default function SongScreen ({route,navigation}){
     const [data,setData]=useState([])
 
 
-useEffect(()=>{
+    useEffect(()=>{
     
      database().ref('/').once('value').then(snapshot => {
       setData(snapshot.val());
@@ -31,7 +31,7 @@ useEffect(()=>{
 
     const togglePlay = async () => {
 
-        if(playbackState  == null){
+        if(playbackState  === 'idle'){
             await TrackPlayer.add({
                 id: route.params.id,
                 url: route.params.url,
@@ -65,7 +65,7 @@ useEffect(()=>{
     
     const playPressed = async(item)=>{
         
-        if(playbackState == null){
+        if(playbackState === 'idle'){
             
             await TrackPlayer.add({
                 id: item.id,
@@ -94,7 +94,6 @@ useEffect(()=>{
        
        
     }
-
 
 
     const TrackObj = {
@@ -137,7 +136,7 @@ useEffect(()=>{
                         </View>
                         <View>
 
-                        <TouchableOpacity onPress={()=>navigation.navigate('AddToPlaylistScreen1',{TrackObj})} style={{padding:5}}>
+                        <TouchableOpacity onPress={()=>navigation.navigate({name:'AddToPlaylistScreen1',params:{TrackObj},merge:true})} style={{padding:5}}>
                             <Icon name='ellipsis-vertical' style={styles.icon} />
                         </TouchableOpacity>
                         </View>

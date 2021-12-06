@@ -35,7 +35,7 @@ useEffect(()=>{
         setlist2(playlistsNames)
     });
  
-    return ()=>subscribe()
+    return subscribe
 
 },[])
 
