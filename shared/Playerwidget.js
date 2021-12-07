@@ -115,6 +115,7 @@ export default function PlayerWidget({navigation}){
       }
 
       const songInfo = `${trackInfo.songTitle} - ${trackInfo.artistName}  `
+      
     return(
         <View style={styles.container}>
             <View style={styles.progressbar}>
@@ -162,8 +163,7 @@ export default function PlayerWidget({navigation}){
             </View>
             
             {
-                playbackState==='loading'||playbackState==='buffering'||playbackState==='ready'||playbackState===8
-                ||playbackState===6?
+                playbackState==='loading'||playbackState==='buffering'||playbackState==='ready'?
                 <TouchableOpacity style={{padding:8}} onPress={togglePause}>
                   <ActivityIndicator color='#fff'/>
                 </TouchableOpacity>

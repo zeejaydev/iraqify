@@ -7,59 +7,34 @@ import TextTicker from 'react-native-text-ticker';
 import FastImage from 'react-native-fast-image'
 
 const {height,width}=Dimensions.get('window')
-
 export default function HomeScreen ({navigation}) {
 
-  const [catName,setCatName]=useState([])
-  const [section1,setSection1]=useState([])
-  const [section2,setSection2]=useState([])
-  const [section3,setSection3]=useState([])
-  const [section4,setSection4]=useState([])
   const [isLoading,setIsLoading]=useState(true)
   const [networkError,setNetworkError]=useState(false)
-  const [premadeList,setPreMadeList]=useState([])
+  const [allData,setAllData]=useState([])
+
 
   const PageRefresh = ()=>{
     setNetworkError(false)
     setIsLoading(true)
-    const firstSection = 'https://iraqify-music.com/wp-json/wp/v2/posts?categories=2';
-    const secSection ='https://iraqify-music.com/wp-json/wp/v2/posts?categories=1';
-    const thirdSection ='https://iraqify-music.com/wp-json/wp/v2/posts?categories=7';
-    const forthSection = 'https://iraqify-music.com/wp-json/wp/v2/posts?categories=8';
-    const catNames = 'https://iraqify-music.com/wp-json/wp/v2/categories?orderby=id';
-    const premade = 'https://iraqify-music.com/wp-json/wp/v2/top_songs?orderby=id';
-
-    const getSection1=axios.get(firstSection)
-    const getSection2=axios.get(secSection)
-    const getSection3=axios.get(thirdSection)
-    const getSection4=axios.get(forthSection)
-    const getCatNames=axios.get(catNames)
-    const getPreMade=axios.get(premade)
      
-
-    axios.all([getSection1,getSection2,getSection3,getSection4,getCatNames,getPreMade]).then(
-      axios.spread((...allData)=>{
-
-        const s1 = allData[0].data
-        const s2 = allData[1].data
-        const s3 = allData[2].data
-        const s4 = allData[3].data
-        const cat = allData[4].data
-        const pre = allData[5].data
-
-        setSection1(s1)
-        setSection2(s2)
-        setSection3(s3)
-        setSection4(s4)
-        setCatName(cat)
-        setPreMadeList(pre)
+    axios.get('https://iraqify-backend.herokuapp.com/api/getdoc',{timeout:30000}).then(
+      (allData)=>{
+        console.log('gotdata')
+        setAllData(allData.data)
         setIsLoading(false)
-      })
+      }
     ).catch((e)=>{
       if(e.message==='Network Error'){
         console.log('network error')
         setIsLoading(false)
         setNetworkError(true)
+        setAllData([])
+      }else if(e.message==='timeout of 30000ms exceeded') {
+        console.log('timeout of 30sec exceeded')
+        setIsLoading(false)
+        setNetworkError(true)
+        setAllData([])
       }else{
         console.log(e)
         setIsLoading(false)
@@ -70,53 +45,29 @@ export default function HomeScreen ({navigation}) {
 
 
   useEffect(()=>{
-
-    requestUserPermission()
-
-    const firstSection = 'https://iraqify-music.com/wp-json/wp/v2/posts?categories=2';
-    const secSection ='https://iraqify-music.com/wp-json/wp/v2/posts?categories=1';
-    const thirdSection ='https://iraqify-music.com/wp-json/wp/v2/posts?categories=7';
-    const forthSection = 'https://iraqify-music.com/wp-json/wp/v2/posts?categories=8';
-    const catNames = 'https://iraqify-music.com/wp-json/wp/v2/categories?orderby=id';
-    const premade = 'https://iraqify-music.com/wp-json/wp/v2/top_songs?orderby=id';
-
-    const getSection1=axios.get(firstSection)
-    const getSection2=axios.get(secSection)
-    const getSection3=axios.get(thirdSection)
-    const getSection4=axios.get(forthSection)
-    const getCatNames=axios.get(catNames)
-    const getPreMade=axios.get(premade)
-     
-
-    axios.all([getSection1,getSection2,getSection3,getSection4,getCatNames,getPreMade]).then(
-      axios.spread((...allData)=>{
-
-        const s1 = allData[0].data
-        const s2 = allData[1].data
-        const s3 = allData[2].data
-        const s4 = allData[3].data
-        const cat = allData[4].data
-        const pre = allData[5].data
-
-        setSection1(s1)
-        setSection2(s2)
-        setSection3(s3)
-        setSection4(s4)
-        setCatName(cat)
-        setPreMadeList(pre)
+    axios.get('https://iraqify-backend.herokuapp.com/api/getdoc',{timeout:30000}).then(
+      (allData)=>{
+        console.log('gotdata')
+        setAllData(allData.data)
         setIsLoading(false)
-      })
+      }
     ).catch((e)=>{
       if(e.message==='Network Error'){
         console.log('network error')
         setIsLoading(false)
         setNetworkError(true)
+        setAllData([])
+      }else if(e.message==='timeout of 30000ms exceeded') {
+        console.log('timeout of 30sec exceeded')
+        setIsLoading(false)
+        setNetworkError(true)
+        setAllData([])
       }else{
         console.log(e)
         setIsLoading(false)
       }
     })
-
+    requestUserPermission()
   },[])
 
 
@@ -132,7 +83,7 @@ export default function HomeScreen ({navigation}) {
     }
   }
 
-
+ 
 
   if(isLoading)return<View style={styles.container}><ActivityIndicator color='#fff' size='large' style={{textAlign:'center'}} /></View>
   if(networkError){
@@ -151,208 +102,90 @@ export default function HomeScreen ({navigation}) {
   }
     return (
           <View style={styles.container}>
-
             <SafeAreaView>
-              <ScrollView
+            <ScrollView
                 showsVerticalScrollIndicator={false}
               >
-            <View style={{flex:1/3}}>
-              <Text style={styles.title}>قوائم تشغيل جاهزه</Text>
-              
-              <ScrollView 
-              style={{flex:1}}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-              >
-                
-                {
-                 
-                  premadeList.map((item)=>{
-                    const name = item.name
-                    const img = item.description
-                    return(
-                      <TouchableOpacity onPress={()=>{navigation.navigate('AlbumScreen',{name,img})}} key={item.id}>
-                        
-                        <FastImage
-                            style={styles.img}
-                            source={{
-                                uri: img,
-                                priority: FastImage.priority.high,
-                            }}
-                            resizeMode={FastImage.resizeMode.contain}
-                        />
-                        <Text style={styles.text}>{name}</Text>
-                        
-                      </TouchableOpacity>
-                    )
-                  })
-                }
-                
-              </ScrollView>
-
-
-            </View>
-            <View style={{flex:1/3,alignItems:'center'}}>
-              <Text style={styles.title}> {catName.length==0?'':catName[1].name} </Text>
-              
-              <ScrollView 
-              style={{flex:1}}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-              >
-                
-                {
-                 
-                  section1.map((item)=>{
-                    const song = item.title.rendered;
-                    const img = item.acf.artwotk;
-                    const artist = item.acf.artist_name;
-                    const url = item.acf.song_url;
-                    const id=item.acf.id;
-                    const duration = parseInt(item.acf.duration);
-
-                    return(
-                      <TouchableOpacity onPress={()=>{navigation.navigate('SongScreen',{song,img,artist,url,duration,id})}} key={item.id}>
-                        {/* <Image source={{uri:img}} style={styles.img} /> */}
-                        <FastImage
-                            style={styles.img}
-                            source={{
-                                uri: img,
-                                priority: FastImage.priority.high,
-                            }}
-                            resizeMode={FastImage.resizeMode.contain}
-                        />
-                        <View style={{width:height<=667?90:130,alignItems:'center'}}>
-                        <TextTicker
-                        style={styles.text}
-                        duration={4000}
-                        animationType='bounce'
-                        loop
-                        scroll={false}
-                        isRTL
-                        bounce
-                        repeatSpacer={10}
-                        marqueeDelay={3000}
-                      >
-                        {artist}
-                      </TextTicker>
-                      <Text style={styles.text}>{song}</Text>
+              {
+                allData.map((cat,index)=>{                 
+                  if(cat.playlists.length > 0){
+                    return( 
+                      <View style={{flex:1/3}} key={index}>
+                        <Text style={styles.title}>{cat.name}</Text>
+                        <ScrollView style={{flex:1}} horizontal showsHorizontalScrollIndicator={false}>
+                          {
+                            cat.playlists.map( (item,i)=>{
+                              const img=item.artwork
+                              const name = item.playlist_name
+                              return(
+                                <TouchableOpacity onPress={()=>{navigation.navigate('AlbumScreen',{name,img})}} key={i}>
+                                  <FastImage
+                                      style={styles.img}
+                                      source={{
+                                          uri: img,
+                                          priority: FastImage.priority.high,
+                                      }}
+                                      resizeMode={FastImage.resizeMode.contain}
+                                  />
+                                  <Text style={styles.text}>{name}</Text>
+                                </TouchableOpacity>
+                              )
+                            }).reverse()
+                          }
+                        </ScrollView>
                       </View>
-                        
-                        {/* <Text style={styles.text}>{artist}</Text> */}
-                        
-                      </TouchableOpacity>
                     )
-                  })
-                }
-                
-              </ScrollView>
-
-
-            </View>
-            <View style={{flex:1/3,alignItems:'center'}}>
-              <Text style={styles.title}>{catName.length==0?'':catName[0].name}</Text>
-              <ScrollView 
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                >
-              {
- 
-                section2.map((item)=>{
-                    const song = item.title.rendered;
-                    const img = item.acf.artwotk;
-                    const artist = item.acf.artist_name;
-                    const url = item.acf.song_url;
-                    const id=item.acf.id;
-                    const duration = parseInt(item.acf.duration);
-                    return(
-                      <TouchableOpacity onPress={()=>{navigation.navigate('SongScreen',{img,artist,song,url,duration,id})}} key={item.id}>
-                        {/* <Image source={{uri:img}} style={styles.img} /> */}
-                        <FastImage
-                            style={styles.img}
-                            source={{
-                                uri: img,
-                                priority: FastImage.priority.high,
-                            }}
-                            resizeMode={FastImage.resizeMode.contain}
-                        />
-                        <Text style={styles.text}>{artist} </Text>
-                        <Text style={styles.text}>{song}</Text>
-                      </TouchableOpacity>
+                  }
+                  return(
+                        <View style={{flex:1/3}} key={index}>
+                          <Text style={styles.title}>{cat.name}</Text>
+                          <ScrollView style={{flex:1}} horizontal showsHorizontalScrollIndicator={false}>
+                            {
+                              cat.tracks.map( (item,i)=>{
+                                const song = item.title;
+                                const img = item.artwotk;
+                                const artist = item.artist_name;
+                                const url = item.song_url;
+                                const id=item.id;
+                                const duration = item.duration;
+                                return(
+                                  <TouchableOpacity onPress={()=>{navigation.navigate('SongScreen',{song,img,artist,url,duration,id})}} key={i}>
+                                    <FastImage
+                                      style={styles.img}
+                                      source={{
+                                          uri: img,
+                                          priority: FastImage.priority.high,
+                                      }}
+                                      resizeMode={FastImage.resizeMode.contain}
+                                    />
+                                    <View style={{width:height<=667?90:130,alignItems:'center'}}>
+                                      <TextTicker
+                                        style={styles.text}
+                                        duration={4000}
+                                        animationType='bounce'
+                                        loop
+                                        scroll={false}
+                                        isRTL
+                                        bounce
+                                        repeatSpacer={10}
+                                        marqueeDelay={3000}
+                                      >
+                                      {artist}
+                                      </TextTicker>
+                                      <Text style={styles.text}>{song}</Text>
+                                    </View>
+                                  </TouchableOpacity>
+                                )
+                              }).reverse()
+                            }
+                          </ScrollView>
+                        </View>  
                     )
-                  })
-                }
+                }).reverse()
+              }
               </ScrollView>
-            </View>
-            <View style={{flex:1/3}}>
-            <Text style={styles.title}>{catName.length==0?'':catName[2].name}</Text>
-              <ScrollView 
-                horizontal
-                showsHorizontalScrollIndicator={false}
-              >
-              {
-                  section3.map((item)=>{
-                    const song = item.title.rendered;
-                    const img = item.acf.artwotk;
-                    const artist = item.acf.artist_name;
-                    const url = item.acf.song_url;
-                    const id=item.acf.id;
-                    const duration = parseInt(item.acf.duration);
-                    return(
-                      <TouchableOpacity onPress={()=>{navigation.navigate('SongScreen',{img,artist,song,url,duration,id})}} key={item.id}>
-                        {/* <Image source={{uri:img}} style={styles.img} /> */}
-                        <FastImage
-                            style={styles.img}
-                            source={{
-                                uri: img,
-                                priority: FastImage.priority.high,
-                            }}
-                            resizeMode={FastImage.resizeMode.contain}
-                        />
-                        <Text style={styles.text}>{artist}</Text>
-                        <Text style={styles.text}>{song}</Text>
-                      </TouchableOpacity>
-                    )
-                  })
-                }
-              </ScrollView>
-            </View>
-            <View style={{flex:1/3}}>
-              <Text style={styles.title}>{catName.length==0?'':catName[3].name}</Text>
-              <ScrollView 
-                horizontal
-                showsHorizontalScrollIndicator={false}
-              >
-              {
-                  section4.map((item)=>{
-                    const song = item.title.rendered;
-                    const img = item.acf.artwotk;
-                    const artist = item.acf.artist_name;
-                    const url = item.acf.song_url;
-                    const id=item.acf.id;
-                    const duration = parseInt(item.acf.duration);
-                    return(
-                      <TouchableOpacity onPress={()=>{navigation.navigate('SongScreen',{img,artist,song,url,duration,id})}} key={item.id}>
-                        {/* <Image source={{uri:img}} style={styles.img} /> */}
-                        <FastImage
-                            style={styles.img}
-                            source={{
-                                uri: img,
-                                priority: FastImage.priority.high,
-                            }}
-                            resizeMode={FastImage.resizeMode.contain}
-                        />
-                        <Text style={styles.text}>{artist}</Text>
-                        <Text style={styles.text}>{song}</Text>
-                      </TouchableOpacity>
-                    )
-                  })
-                }
-              </ScrollView>
-            </View>
-            </ScrollView>
-          </SafeAreaView>
-        </View>
+            </SafeAreaView>
+          </View>
     );
 
   }
