@@ -7,14 +7,46 @@ import {PlaylistInfoProvider} from './shared/playlistContext';
 import MainNav from "./routes/mainNav";
 import SplashScreen from 'react-native-splash-screen';
 import VersionCheck from 'react-native-version-check';
+import TrackPlayer,{Capability} from 'react-native-track-player';
+
 
 // import TrackPlayer from 'react-native-track-player';
 const App = () => {
+  const setupIfNecessary = async () => {
+    // if app was relaunched and music was already playing, we don't setup again.
+    const currentTrack = await TrackPlayer.getCurrentTrack();
+    if (currentTrack !== null) {
+      return;
+    }
+  
+    await TrackPlayer.setupPlayer({});
+    await TrackPlayer.updateOptions({
+      stopWithApp: true,
+      capabilities: [
+        Capability.Play,
+          Capability.Pause,
+          Capability.SkipToNext,
+          Capability.SkipToPrevious,
+          Capability.Stop,
+      ],
+      compactCapabilities: [
+        Capability.Play, 
+        Capability.Pause,
+        Capability.SkipToNext,
+        Capability.SkipToPrevious,
+        
+      ]
+    });
+  
+
+  }
+
 
   useEffect(() => {
      setTimeout(() => {
       SplashScreen.hide();
      }, 150);
+     setupIfNecessary();
  }, []);
 
  useEffect(()=>{ 

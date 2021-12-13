@@ -11,7 +11,6 @@ const {width,height}=Dimensions.get('window')
 
 export default function PlayerWidget({navigation}){
 
-    // const [trackInfo,setTrackInfo]=useContext(TrackContext);
     const [trackInfo,setTrackInfo]=useState({
       arttistName:'',
       songTitle:'',
@@ -22,58 +21,6 @@ export default function PlayerWidget({navigation}){
     const playbackState = usePlaybackState();
     const progress = useProgress(150);
 
-    useEffect(() => {
-      async function setup() {
-        await TrackPlayer.setupPlayer();
-        await TrackPlayer.updateOptions({
-          stopWithApp: true,
-          capabilities: [
-            Capability.Play,
-            Capability.Pause,
-            Capability.SkipToNext,
-            Capability.SkipToPrevious,
-            Capability.Stop,
-          ],
-          compactCapabilities: [
-            Capability.Play, 
-            Capability.Pause,
-            Capability.SkipToNext,
-            Capability.SkipToPrevious,
-          ]
-        });
-      }
-      return setup
-    }, []);
-
-    // const events = [
-    //   Event.PlaybackTrackChanged,
-    //   Event.PlaybackQueueEnded
-    // ];
-    // useTrackPlayerEvents(events, async (event) => {
-    //   if (event.type === Event.PlaybackTrackChanged) {
-    //       if(event.nextTrack===0 ||event.nextTrack>0){
-    //         // console.log('0 or > 0 coming from playerwidget.js line54')
-    //         const track = await TrackPlayer.getTrack(event.nextTrack);
-            
-    //         const { title, artist, artwork,id,duration} = track || {};
-    //         if(title == undefined || artwork==undefined || artist==undefined ){
-    //           setTrackInfo({songTitle:'',artistName:'',artwork:'',duration:0,position:0})
-              
-    //         }else{
-    //           setTrackInfo({...trackInfo,songTitle:title,artistName:artist,artwork:artwork,duration:duration})
-    //           await TrackPlayer.setVolume(1)
-            
-    //         }
-    //       }else{
-    //         setTrackInfo({songTitle:'',artistName:'',artwork:'https://zeejaydev.com/iraqify/artworks/nosong.jpeg',duration:0,position:0})
-    //       }
-        
-    //     }else if(event.type === Event.PlaybackQueueEnded){
-          
-    //       setTrackInfo({songTitle:'',artistName:'',artwork:'https://zeejaydev.com/iraqify/artworks/nosong.jpeg',duration:0,position:0})
-    //     }
-
-    //   });
     
     useTrackPlayerEvents([Event.PlaybackQueueEnded], async event => {
       if (
@@ -106,12 +53,10 @@ export default function PlayerWidget({navigation}){
       const togglePause = async()=>{
          await TrackPlayer.pause();
          setTrackInfo({...trackInfo,position:progress.position,duration:progress.duration})
-        //  setIsPlaying(false)
       }
       
       const togglePlay = async()=>{
         await TrackPlayer.play();
-        //  setIsPlaying(true)
       }
 
       const songInfo = `${trackInfo.songTitle} - ${trackInfo.artistName}  `
@@ -141,8 +86,6 @@ export default function PlayerWidget({navigation}){
                    
                     :
                     <React.Fragment  >
-                    {/* <Text style={styles.songTitle}>{trackInfo.songTitle}</Text>
-                    <Text style={{color:'#fff',fontWeight:'700'}}> - </Text> */}
                     <TextTicker
                       style={styles.noSongText}
                       duration={4000}
