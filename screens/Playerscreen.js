@@ -68,7 +68,7 @@ export default function PlayerScreen(){
        
     },[])
     
-    useTrackPlayerEvents([Event.PlaybackTrackChanged,Event.PlaybackQueueEnded], async event => {
+    useTrackPlayerEvents([Event.PlaybackTrackChanged], async event => {
       if (
         event.type === Event.PlaybackTrackChanged &&
         event.nextTrack !== undefined
@@ -76,9 +76,6 @@ export default function PlayerScreen(){
         const track = await TrackPlayer.getTrack(event.nextTrack);
         const {title, artist, artwork,duration} = track || {};
         setCurrentTrack({artistName:artist,songTitle:title,artwork:artwork})
-      }else if(event.type ===Event.PlaybackQueueEnded){
-          await TrackPlayer.seekTo(0).then(()=>TrackPlayer.pause())
-          setSliderValue(0)
       }
     });
 
@@ -127,14 +124,14 @@ export default function PlayerScreen(){
             if(queManagement.shuffle===1){
                 if(queManagement.repeat>1){setQueManagement({...queManagement,repeat:1})}
                 setQueManagement({...queManagement,shuffle:queManagement.shuffle+1,shuffled:true})
-                console.log(queManagement.shuffle+'Shuffle on: coming from Playerscreen.js Shuffle fun')
+                // console.log(queManagement.shuffle+'Shuffle on: coming from Playerscreen.js Shuffle fun')
                 const shuffled = que.map((value) => ({ value, sort: Math.random() }))
                 .sort((a, b) => a.sort - b.sort)
                 .map(({ value }) => value)
                 await TrackPlayer.reset()
                 await TrackPlayer.add(shuffled).then(()=>TrackPlayer.play())
             }else{
-                console.log(queManagement.shuffle+'Shuffle off: coming from Playerscreen.js Shuffle fun')
+                // console.log(queManagement.shuffle+'Shuffle off: coming from Playerscreen.js Shuffle fun')
                 setQueManagement({...queManagement,shuffle:1})
                 
             }

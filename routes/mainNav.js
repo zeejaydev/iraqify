@@ -5,7 +5,6 @@ import PlayerWidget from '../shared/Playerwidget';
 import { createStackNavigator,TransitionSpecs,CardStyleInterpolators } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import PlayerScreen from '../screens/Playerscreen';
-import QueueScreen from '../screens/Queuescreen';
 import Profile from '../screens/Profilescreen';
 import {Icon} from 'native-base';
 import auth from '@react-native-firebase/auth';
@@ -116,7 +115,7 @@ return(
                 }
               }}
             />
-            <Stack.Screen
+            {/* <Stack.Screen
               name='Queuescreen'
               component={QueueScreen}
               options={{
@@ -134,7 +133,7 @@ return(
                     shadowColor:'none',
                 }
               }}
-            />
+            /> */}
             <Stack.Screen
               name='Profile'
               component={Profile}

@@ -11,42 +11,55 @@ const {width,height}=Dimensions.get('window')
 
 export default function PlayerWidget({navigation}){
 
-    const [trackInfo,setTrackInfo]=useState({
-      arttistName:'',
-      songTitle:'',
-      artwork:'',
-      position:0,
-      duration:0
+  // const [trackInfo,setTrackInfo]=useState({
+  //     arttistName:'',
+  //     songTitle:'',
+  //     artwork:'',
+  //     position:0,
+  //     duration:0
+  // });
+  const [trackInfo,setTrackInfo]=useContext(TrackContext);
+  const playbackState = usePlaybackState();
+  const progress = useProgress(150);
+
+    
+  useTrackPlayerEvents([Event.PlaybackQueueEnded,Event.PlaybackTrackChanged], async event => {
+    if (
+      event.type === Event.PlaybackTrackChanged 
+    ) {
+      const currentTrack = await TrackPlayer.getCurrentTrack();
+      const track = await TrackPlayer.getTrack(currentTrack)
+      const {title, artist, artwork,duration} = track || {};
+      return setTrackInfo({...trackInfo,artistName:artist,songTitle:title,position:progress.position,duration:duration})
+    }
+
+    if (
+      event.type === Event.PlaybackQueueEnded &&
+      event.nextTrack == undefined
+    ) {
+      console.log("last track")
+    //   const que = await TrackPlayer.getQueue()
+      
+    //   await TrackPlayer.add([...que]).then(()=>TrackPlayer.pause())
+    }
   });
-    const playbackState = usePlaybackState();
-    const progress = useProgress(150);
-
     
-    useTrackPlayerEvents([Event.PlaybackQueueEnded], async event => {
-      if (
-        event.type === Event.PlaybackQueueEnded &&
-        event.nextTrack == undefined
-      ) {
-        await TrackPlayer.seekTo(0).then(()=>TrackPlayer.pause())
-      }
-    });
-    
-    useEffect(()=>{
+    // useEffect(()=>{
       
-      const updateTrackInfo = async ()=>{
-        const trackid = await TrackPlayer.getCurrentTrack()
-        if(trackid===0||trackid>0){
-          const track = await TrackPlayer.getTrack(trackid)
+    //   const updateTrackInfo = async ()=>{
+    //     const trackid = await TrackPlayer.getCurrentTrack()
+    //     if(trackid===0||trackid>0){
+    //       const track = await TrackPlayer.getTrack(trackid)
           
-          setTrackInfo({...trackInfo,artistName:track.artist,songTitle:track.title,position:progress.position,duration:progress.duration})
-        }else{
-          return null
-        }
-      }
+    //       setTrackInfo({...trackInfo,artistName:track.artist,songTitle:track.title,position:progress.position,duration:progress.duration})
+    //     }else{
+    //       return null
+    //     }
+    //   }
       
-      return updateTrackInfo
+    //   return updateTrackInfo
 
-    },[progress.duration,progress.position])
+    // },[progress.duration,progress.position])
     
     
 

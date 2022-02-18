@@ -6,7 +6,7 @@ export const TrackContext = createContext();
 
 export const TrackInfoProvider = (props)=>{
     const [trackInfo,setTrackInfo]=useState({
-        arttistName:'',
+        artistName:'',
         songTitle:'',
         artwork:'',
         position:0,

@@ -1,26 +1,10 @@
 import TrackPlayer, {Event, State} from 'react-native-track-player';
 let wasPausedByDuck = false;
 
-module.exports = async function () {
+module.exports = async function setup () {
     TrackPlayer.addEventListener(Event.RemotePlay, () => {
       TrackPlayer.play();
       });
-    TrackPlayer.addEventListener(Event.RemoteDuck, async e => {
-      if (e.permanent === true) {
-        TrackPlayer.pause();
-      } else {
-        if (e.paused === true) {
-          const playerState = await TrackPlayer.getState();
-          wasPausedByDuck = playerState !== State.Paused;
-          TrackPlayer.pause();
-        } else {
-          if (wasPausedByDuck === true) {
-            TrackPlayer.play();
-            wasPausedByDuck = false;
-          }
-        }
-      }
-    });
       
       TrackPlayer.addEventListener(Event.RemotePause, () => {
        TrackPlayer.pause();
@@ -51,5 +35,20 @@ module.exports = async function () {
         
       });
 
-   
+      TrackPlayer.addEventListener(Event.RemoteDuck, async e => {
+        if (e.permanent === true) {
+          TrackPlayer.pause();
+        } else {
+          if (e.paused === true) {
+            const playerState = await TrackPlayer.getState();
+            wasPausedByDuck = playerState !== State.Paused;
+            TrackPlayer.pause();
+          } else {
+            if (wasPausedByDuck === true) {
+              TrackPlayer.play();
+              wasPausedByDuck = false;
+            }
+          }
+        }
+      });
 };

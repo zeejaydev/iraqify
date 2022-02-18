@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React,{useEffect} from 'react';
+import React,{useEffect,useContext} from 'react';
 import { StatusBar,Platform, Alert,SafeAreaView,BackHandler,Linking} from 'react-native';
 import {TrackInfoProvider} from './shared/Trackcontext';
 import {QueueManagementProvider} from './shared/queueManagementContext';
@@ -10,7 +10,6 @@ import VersionCheck from 'react-native-version-check';
 import TrackPlayer,{Capability} from 'react-native-track-player';
 
 
-// import TrackPlayer from 'react-native-track-player';
 const App = () => {
   const setupIfNecessary = async () => {
     // if app was relaunched and music was already playing, we don't setup again.
@@ -42,6 +41,8 @@ const App = () => {
   }
 
 
+ 
+ 
   useEffect(() => {
      setTimeout(() => {
       SplashScreen.hide();

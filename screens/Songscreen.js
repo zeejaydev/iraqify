@@ -1,5 +1,5 @@
 import React,{useEffect,useState} from "react";
-import {View,Text,StyleSheet,Image,TouchableOpacity,ScrollView,Dimensions,ImageBackground} from 'react-native';
+import {View,Text,StyleSheet,Image,TouchableOpacity,ScrollView,Dimensions,ActivityIndicator} from 'react-native';
 import {Icon} from 'native-base';
 import TrackPlayer, { usePlaybackState }  from 'react-native-track-player';
 import database from '@react-native-firebase/database';
@@ -12,12 +12,13 @@ export default function SongScreen ({route,navigation}){
     const playbackState = usePlaybackState();
     
     const [data,setData]=useState([])
-
+    const [loading,setloading]=useState(false)
 
     useEffect(()=>{
-    
-     database().ref('/').once('value').then(snapshot => {
-      setData(snapshot.val());
+    setloading(true)
+    database().ref('/').once('value').then(snapshot => {
+      setData(snapshot.val().filter((songs)=>songs.artistName===route.params.artist));
+      setloading(false)
     //   setIsloading(false)
     }).catch((e)=>{
       console.log(e)
@@ -30,7 +31,6 @@ export default function SongScreen ({route,navigation}){
   },[])
 
     const togglePlay = async () => {
-
         if(playbackState  === 'idle'){
             await TrackPlayer.add({
                 id: route.params.id,
@@ -62,6 +62,50 @@ export default function SongScreen ({route,navigation}){
 
     };
 
+    const shuffle = (array)=> {
+        let currentIndex = array.length,  randomIndex;
+      
+        // While there remain elements to shuffle...
+        while (currentIndex != 0) {
+      
+          // Pick a remaining element...
+          randomIndex = Math.floor(Math.random() * currentIndex);
+          currentIndex--;
+      
+          // And swap it with the current element.
+          [array[currentIndex], array[randomIndex]] = [
+            array[randomIndex], array[currentIndex]];
+        }
+      
+        return array;
+      }
+
+    const playAll = async () => {
+        const tracks = data.map((i)=>({
+            id:i.id,
+            url:i.songUrl,
+            title:i.songName,
+            artist:i.artistName,
+            artwork:i.imgUri,
+            duration: i.duration,
+            pitchAlgorithm: i.pitchAlgorithm
+        }))
+        const shuffled = shuffle(tracks)
+        
+        if(playbackState  === 'idle'){
+            await TrackPlayer.add([...shuffled]);
+            await TrackPlayer.setVolume(1)
+            await TrackPlayer.play()
+           
+        }else {
+            await TrackPlayer.reset()
+            await TrackPlayer.add([...shuffled]);
+            await TrackPlayer.setVolume(1)
+            await TrackPlayer.play()
+            
+        }
+
+    };
     
     const playPressed = async(item)=>{
         
@@ -112,11 +156,17 @@ export default function SongScreen ({route,navigation}){
                 <Image source={{uri:route.params.img}} style={styles.img}/>
                 <Text style={styles.text}>{route.params.artist}</Text>
                 
+                {
+                    loading ? <View style={styles.button}>
+                    <ActivityIndicator  color='white' size='small'/>
+                </View>:
                 <View>
-                <TouchableOpacity style={styles.button} onPress={togglePlay}>
-                    <Text style={styles.buttonText}>Play</Text>
+                <TouchableOpacity style={styles.button} onPress={playAll}>
+                    <Text style={styles.buttonText}>تشغيل جميع الاغاني</Text>
                 </TouchableOpacity>
                 </View>
+                }
+                
             </View>
             
            
@@ -126,6 +176,13 @@ export default function SongScreen ({route,navigation}){
                 <View style={styles.list}>
 
                     <View style={styles.newSong}>
+                        <View>
+
+                            <TouchableOpacity onPress={()=>navigation.navigate({name:'AddToPlaylistScreen1',params:{TrackObj},merge:true})} style={{padding:10}}>
+                                <Icon name='ellipsis-vertical' style={styles.icon} />
+                            </TouchableOpacity>
+                        </View>
+
                         <View >
                             <TouchableOpacity style={{padding:5}} onPress={togglePlay}>
 
@@ -134,12 +191,7 @@ export default function SongScreen ({route,navigation}){
 
                             </TouchableOpacity>
                         </View>
-                        <View>
-
-                        <TouchableOpacity onPress={()=>navigation.navigate({name:'AddToPlaylistScreen1',params:{TrackObj},merge:true})} style={{padding:5}}>
-                            <Icon name='ellipsis-vertical' style={styles.icon} />
-                        </TouchableOpacity>
-                        </View>
+                        
 
                     </View>
                     
@@ -256,7 +308,7 @@ const styles = StyleSheet.create({
         color:'#b3b3b3'
     },
     songTitle:{
-
+        textAlign:'right',
         color:'#fff',
         marginHorizontal:height<=600?15:20,
         marginVertical:5,
@@ -264,7 +316,7 @@ const styles = StyleSheet.create({
         fontWeight:'bold'
     },
     songText:{
-      
+        textAlign:'right',
         color:'#b2b2b2',
         marginHorizontal:height<=600?15:20,
         fontSize:height<=600?10:12,
