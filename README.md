@@ -10,6 +10,7 @@ Audio Streaming App just like spotify.
   <img src="./githubPics/playerScreen.png" width="185" height="400">
 </p>
 
+[<img src="./githubPics/appleIcon.png" width="185" height="400">](https://appstoreconnect.apple.com/apps/1553219762/appstore/info)
 # FEATUERS
 * Connected to a React CMS to update home screen with the newest songs.
 * Auth service
