@@ -3,6 +3,7 @@ Audio Streaming App just like spotify.
 
 <p float="left">
   <img src="./githubPics/loading.png" width="185" height="400">
+  <img src="./githubPics/login.png" width="185" height="400">
   <img src="./githubPics/home.png" width="185" height="400">
   <img src="./githubPics/search.png" width="185" height="400">
   <img src="./githubPics/playlist.png" width="185" height="400">
