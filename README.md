@@ -16,7 +16,9 @@ Audio Streaming App just like spotify.
 # FEATUERS
 * Connected to a React CMS to update home screen with the newest songs.
 * Auth service
-* Most of spotify services, like playlists,seek,search...etc
+* Most of spotify services, like playlists,seek,search, ...etc
+* Remote push notification
+* Version Checker 
 
 # Running The App
 download zip file and extract then do
