@@ -29,8 +29,10 @@ export default function PlayerWidget({navigation}){
     ) {
       const currentTrack = await TrackPlayer.getCurrentTrack();
       const track = await TrackPlayer.getTrack(currentTrack)
-      const {title, artist, artwork,duration} = track || {};
-      return setTrackInfo({...trackInfo,artistName:artist,songTitle:title,position:progress.position,duration:duration})
+      if(track){
+        const {title, artist, artwork,duration} = track || {};
+        return setTrackInfo({...trackInfo,artistName:artist,songTitle:title,position:progress.position,duration:duration})
+      }
     }
 
     if (

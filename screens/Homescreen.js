@@ -4,71 +4,71 @@ import messaging from '@react-native-firebase/messaging';
 import axios from 'axios';
 import { Icon } from "native-base";
 import TextTicker from 'react-native-text-ticker';
-import FastImage from 'react-native-fast-image'
+import FastImage from 'react-native-fast-image';
 
-const {height,width}=Dimensions.get('window')
+const {height,width}=Dimensions.get('window');
 export default function HomeScreen ({navigation}) {
 
-  const [isLoading,setIsLoading]=useState(true)
-  const [networkError,setNetworkError]=useState(false)
-  const [allData,setAllData]=useState([])
+  const [isLoading,setIsLoading]=useState(true);
+  const [networkError,setNetworkError]=useState(false);
+  const [allData,setAllData]=useState([]);
 
 
   const PageRefresh = ()=>{
-    setNetworkError(false)
-    setIsLoading(true)
+    setNetworkError(false);
+    setIsLoading(true);
      
     axios.get('https://iraqify-backend.herokuapp.com/api/getdoc',{timeout:30000}).then(
       (allData)=>{
-        console.log('gotdata')
-        setAllData(allData.data)
-        setIsLoading(false)
+        console.log('gotdata');
+        setAllData(allData.data);
+        setIsLoading(false);
       }
     ).catch((e)=>{
       if(e.message==='Network Error'){
-        console.log('network error')
-        setIsLoading(false)
-        setNetworkError(true)
-        setAllData([])
+        console.log('network error');
+        setIsLoading(false);
+        setNetworkError(true);
+        setAllData([]);
       }else if(e.message==='timeout of 30000ms exceeded') {
-        console.log('timeout of 30sec exceeded')
-        setIsLoading(false)
-        setNetworkError(true)
-        setAllData([])
+        console.log('timeout of 30sec exceeded');
+        setIsLoading(false);
+        setNetworkError(true);
+        setAllData([]);
       }else{
-        console.log(e)
-        setIsLoading(false)
+        console.log(e);
+        setIsLoading(false);
       }
-    })
-  }
+    });
+  };
 
 
 
   useEffect(()=>{
     axios.get('https://iraqify-backend.herokuapp.com/api/getdoc',{timeout:30000}).then(
       (allData)=>{
-        console.log('gotdata')
-        setAllData(allData.data)
-        setIsLoading(false)
+        console.log('gotdata');
+        setAllData(allData.data);
+        setIsLoading(false);
       }
     ).catch((e)=>{
       if(e.message==='Network Error'){
-        console.log('network error')
-        setIsLoading(false)
-        setNetworkError(true)
-        setAllData([])
+        console.log('network error');
+        setIsLoading(false);
+        setNetworkError(true);
+        setAllData([]);
       }else if(e.message==='timeout of 30000ms exceeded') {
-        console.log('timeout of 30sec exceeded')
-        setIsLoading(false)
-        setNetworkError(true)
-        setAllData([])
+        console.log('timeout of 30sec exceeded');
+        setIsLoading(false);
+        setNetworkError(true);
+        setAllData([]);
       }else{
-        console.log(e)
-        setIsLoading(false)
+        console.log(e);
+        setIsLoading(false);
       }
-    })
-    requestUserPermission()
-  },[])
+    });
+    requestUserPermission();
+  },[]);
 
 
 
@@ -77,15 +77,14 @@ export default function HomeScreen ({navigation}) {
     const enabled = authStatus === messaging.AuthorizationStatus.AUTHORIZED || authStatus === messaging.AuthorizationStatus.PROVISIONAL;
   
     if (enabled) {
-      // const token = await messaging().getToken()
-      
-      // console.log(token)
+      const token = await messaging().getToken();
+      console.log(token);
     }
   }
 
  
 
-  if(isLoading)return<View style={styles.container}><ActivityIndicator color='#fff' size='large' style={{textAlign:'center'}} /></View>
+  if(isLoading)return<View style={styles.container}><ActivityIndicator color='#fff' size='large' style={{textAlign:'center'}} /></View>;
   if(networkError){
     return(
     <View style={{...styles.container}}>
@@ -98,7 +97,7 @@ export default function HomeScreen ({navigation}) {
         <Text style={{color:'#fff'}} >Try Again</Text>
       </TouchableOpacity>
     </View>
-    )
+    );
   }
     return (
           <View style={styles.container}>
@@ -115,10 +114,10 @@ export default function HomeScreen ({navigation}) {
                         <ScrollView style={{flex:1}} horizontal showsHorizontalScrollIndicator={false}>
                           {
                             cat.playlists.map( (item,i)=>{
-                              const img=item.artwork
-                              const name = item.playlist_name
+                              const img=item.artwork;
+                              const name = item.playlist_name;
                               return(
-                                <TouchableOpacity onPress={()=>{navigation.navigate('AlbumScreen',{name,img})}} key={i}>
+                                <TouchableOpacity onPress={()=>{navigation.navigate('AlbumScreen',{name,img});}} key={i}>
                                   <FastImage
                                       style={styles.img}
                                       source={{
@@ -129,12 +128,12 @@ export default function HomeScreen ({navigation}) {
                                   />
                                   <Text style={styles.text}>{name}</Text>
                                 </TouchableOpacity>
-                              )
+                              );
                             }).reverse()
                           }
                         </ScrollView>
                       </View>
-                    )
+                    );
                   }
                   return(
                         <View style={{flex:1/3}} key={index}>
@@ -149,7 +148,7 @@ export default function HomeScreen ({navigation}) {
                                 const id=item.id;
                                 const duration = item.duration;
                                 return(
-                                  <TouchableOpacity onPress={()=>{navigation.navigate('SongScreen',{song,img,artist,url,duration,id})}} key={i}>
+                                  <TouchableOpacity onPress={()=>{navigation.navigate('SongScreen',{song,img,artist,url,duration,id});}} key={i}>
                                     <FastImage
                                       style={styles.img}
                                       source={{
@@ -175,12 +174,12 @@ export default function HomeScreen ({navigation}) {
                                       <Text style={styles.text}>{song}</Text>
                                     </View>
                                   </TouchableOpacity>
-                                )
+                                );
                               }).reverse()
                             }
                           </ScrollView>
                         </View>  
-                    )
+                    );
                 }).reverse()
               }
               </ScrollView>
@@ -217,4 +216,4 @@ const styles = StyleSheet.create({
     color:'white',
     textAlign:'center',
   }
-})
+});

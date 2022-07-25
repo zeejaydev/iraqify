@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from 'react';
+import React,{useState,useEffect, useRef} from 'react';
 import { Easing,StyleSheet,View,Text,Image,TouchableOpacity,Dimensions} from "react-native";
 import { createStackNavigator,CardStyleInterpolators } from '@react-navigation/stack';
 import SongScreen from '../screens/Songscreen';
@@ -20,13 +20,16 @@ const {height}=Dimensions.get('window')
 export default function StackNav({navigation}){
 
     const [username,setusername] = useState({})
-    const user = auth().currentUser
+    const [showDropDown,setShowDropDown] = useState(false)
+    const user = auth().currentUser;
 
-
+    const handleDeleteAccount = ()=>{
+        setShowDropDown(!showDropDown)
+        user.delete()
+        StopSongs()
+    } 
     useEffect(()=>{
-        
         const subscribe = firestore().collection('Users').doc(user.uid).onSnapshot((querySnapshot)=> {
-           
             try {
                 if(querySnapshot.data()){
                     setusername(querySnapshot.data())
@@ -38,10 +41,7 @@ export default function StackNav({navigation}){
             } catch (error) {
                 console.log(error)
             }
-            
         });
-        
-
       return subscribe
     },[])
 
@@ -52,21 +52,25 @@ export default function StackNav({navigation}){
             style={{marginLeft:10}}
             >
          
+                <TouchableOpacity onPress={()=>setShowDropDown(!showDropDown)}>
+                    <View style={{flexDirection:'row',alignItems:'center'}} >
+                        {user.photoURL?
+                        <FastImage
+                        style={styles.userImg}
+                        source={{
+                            uri: `${user.photoURL}?width=200`,
+                            priority: FastImage.priority.high,
+                        }}
+                        resizeMode={FastImage.resizeMode.contain}
+                    />
+                        :<Icon name='person-circle-outline' style={styles.userIcon}/>}
+                        <Text style={styles.userGreetings} >hello {username.name}</Text>
 
-                <View style={{flexDirection:'row',alignItems:'center'}} >
-                    {user.photoURL?
-                     <FastImage
-                     style={styles.userImg}
-                     source={{
-                         uri: `${user.photoURL}?width=200`,
-                         priority: FastImage.priority.high,
-                     }}
-                     resizeMode={FastImage.resizeMode.contain}
-                 />
-                    :<Icon name='person-circle-outline' style={styles.userIcon}/>}
-                    <Text style={styles.userGreetings}>hello {username.name}</Text>
-                </View>
-        
+                    </View>
+                </TouchableOpacity>
+                {showDropDown && <TouchableOpacity onPress={handleDeleteAccount} ><View style={styles.dropDownMenu}>
+                        <Text style={{color:'white',fontWeight:'bold',width:'100%'}}>Delete Account</Text>    
+                    </View></TouchableOpacity>}
             </View>
         )
     }
@@ -213,5 +217,13 @@ const styles = StyleSheet.create({
         marginLeft:5,
         textTransform:'capitalize',
         fontWeight:'bold'
+    },
+    dropDownMenu:{
+        position:'absolute',
+        top:0,
+        backgroundColor:'red',
+        width:'100%',
+        paddingVertical:10,
+        paddingHorizontal:10,
     }
     })
