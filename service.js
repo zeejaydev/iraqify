@@ -12,7 +12,7 @@ module.exports = async function setup () {
       });
       
       TrackPlayer.addEventListener(Event.RemoteStop, () => {
-        TrackPlayer.stop();
+        TrackPlayer.pause();
       });
       
       TrackPlayer.addEventListener(Event.RemoteNext, async() => {  

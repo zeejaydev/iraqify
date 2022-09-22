@@ -23,7 +23,7 @@ export default function PlayerScreen(){
         const getQue = await TrackPlayer.getQueue()
         
         if(cTrack!==null){
-            const trackInf = await TrackPlayer.getTrack(cTrack);
+            const trackInf = await TrackPlayer.getTrack(cTrack || 0);
             if(getQue.length > 1){
                 setDisableNext(false)
                 setDisablePrev(false)
@@ -73,7 +73,7 @@ export default function PlayerScreen(){
         event.type === Event.PlaybackTrackChanged &&
         event.nextTrack !== undefined
       ) {
-        const track = await TrackPlayer.getTrack(event.nextTrack);
+        const track = await TrackPlayer.getTrack(event.nextTrack || 0);
         const {title, artist, artwork,duration} = track || {};
         setCurrentTrack({artistName:artist,songTitle:title,artwork:artwork})
       }

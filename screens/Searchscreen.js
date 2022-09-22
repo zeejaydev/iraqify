@@ -1,4 +1,4 @@
-import React,{useState,useContext,useEffect} from "react";
+import React,{useState,useCallback,useEffect} from "react";
 import { Text, 
   View, StyleSheet,TextInput,
   TouchableWithoutFeedback,Keyboard,TouchableOpacity,Image,ImageBackground,
@@ -8,10 +8,13 @@ import TrackPlayer, { usePlaybackState }  from 'react-native-track-player';
 // import { TrackContext } from "../shared/Trackcontext";
 import database from '@react-native-firebase/database';
 import FastImage from 'react-native-fast-image'
+import analytics from '@react-native-firebase/analytics';
+import { debounce } from "lodash";
 
 const {height}=Dimensions.get('window')
 
 export default function SearchScreen ({navigation}) {
+  const handler = useCallback(debounce(sendAnalytics, 500), [searchValue]);
 
   const [searchValue,setSearchValue]=useState('');
 
@@ -20,7 +23,6 @@ export default function SearchScreen ({navigation}) {
   const [isLoading,setIsloading]=useState(true)
 
   useEffect(()=>{
-    
      database().ref('/').once('value').then(snapshot => {
       setData(snapshot.val());
       setIsloading(false)
@@ -29,11 +31,11 @@ export default function SearchScreen ({navigation}) {
       setIsloading(false)
       setData(null)
     });
-
-
-
   },[])
 
+  async function sendAnalytics (){
+    analytics().logSearch({search_term:searchValue})
+  }
 
 
 
@@ -68,7 +70,10 @@ export default function SearchScreen ({navigation}) {
   }
   }
 
-
+const handleSearch = (text)=>{
+  setSearchValue(text)
+  handler()
+}
 
     
     return (
@@ -86,7 +91,7 @@ export default function SearchScreen ({navigation}) {
           <TextInput 
             style={styles.input} 
             placeholder='ابحث عن اسم اغنيه او فنان' 
-            onChangeText={text=>setSearchValue(text)}
+            onChangeText={text=>handleSearch(text)}
             value={searchValue}
             placeholderTextColor='#fff'
             

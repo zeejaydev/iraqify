@@ -12,31 +12,31 @@ import TrackPlayer,{Capability} from 'react-native-track-player';
 
 const App = () => {
   const setupIfNecessary = async () => {
-    // if app was relaunched and music was already playing, we don't setup again.
-    const currentTrack = await TrackPlayer.getCurrentTrack();
-    if (currentTrack !== null) {
-      return;
-    }
-  
-    await TrackPlayer.setupPlayer({});
-    await TrackPlayer.updateOptions({
-      stopWithApp: true,
-      capabilities: [
-        Capability.Play,
+    try {
+      // this method will only reject if player has not been setup yet
+      await TrackPlayer.getCurrentTrack();
+
+    } catch {
+      await TrackPlayer.setupPlayer();
+      await TrackPlayer.updateOptions({
+        stoppingAppPausesPlayback: true,
+        capabilities: [
+          Capability.Play,
+            Capability.Pause,
+            Capability.SkipToNext,
+            Capability.SkipToPrevious,
+            Capability.Stop,
+        ],
+        compactCapabilities: [
+          Capability.Play, 
           Capability.Pause,
           Capability.SkipToNext,
           Capability.SkipToPrevious,
-          Capability.Stop,
-      ],
-      compactCapabilities: [
-        Capability.Play, 
-        Capability.Pause,
-        Capability.SkipToNext,
-        Capability.SkipToPrevious,
-        
-      ]
-    });
-  
+          
+        ],
+        progressUpdateEventInterval: 2,
+      });
+    }
 
   }
 

@@ -75,15 +75,15 @@ export default function StackNav({navigation}){
         )
     }
 
-    const StopSongs = ()=>{
-        TrackPlayer.stop()
-        TrackPlayer.destroy()
-    }
+    // const StopSongs = ()=>{
+    //     TrackPlayer.stop()
+    //     TrackPlayer.destroy()
+    // }
 
 
     function HeaderRight (){
         return(
-            <TouchableOpacity onPress={()=>{auth().signOut().then(()=>StopSongs(),LoginManager.logOut() )}} >
+            <TouchableOpacity onPress={()=>{auth().signOut().then(()=>LoginManager.logOut() )}} >
                 <View style={{flexDirection:'row',alignItems:'center'}}>
                     
                     <Text style={styles.userSignOutText}>خروج</Text>
