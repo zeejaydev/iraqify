@@ -2,7 +2,7 @@ import React,{useEffect,useState,useContext} from 'react';
 import { View,Text, StyleSheet,Image,Dimensions,TouchableOpacity } from "react-native";
 import TrackPlayer,{useProgress,usePlaybackState,State,RepeatMode,useTrackPlayerEvents,Event}  from 'react-native-track-player';
 import {Icon} from 'native-base';
-import Slider from "@brlja/react-native-slider";
+// import Slider from "@brlja/react-native-slider";
 import { TrackContext } from "../shared/Trackcontext";
 import { QueueManagementContext } from "../shared/queueManagementContext";
 
@@ -276,7 +276,7 @@ export default function PlayerScreen(){
 
                     
                                     <View style={styles.progress}>
-                                        <Slider
+                                        {/* <Slider
                                             disabled={sliderDis}
                                             style={{width:'100%',height:25}}
                                             thumbTintColor='#fff'
@@ -287,7 +287,7 @@ export default function PlayerScreen(){
                                             maximumTrackTintColor='#fff'
                                             onSlidingStart={slidingStarted}
                                             onSlidingComplete={slidingCompleted}
-                                        />
+                                        /> */}
                                     </View>
                                    
 
