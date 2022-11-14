@@ -1,6 +1,6 @@
 import React,{useEffect,useState,useContext} from 'react';
 import {View,Text,StyleSheet,TouchableOpacity,Dimensions,ActivityIndicator} from 'react-native';
-import { Icon } from "native-base";
+import Icon from 'react-native-vector-icons/Ionicons';
 import TrackPlayer,{usePlaybackState,useProgress, useTrackPlayerEvents,Capability,State,Event } from 'react-native-track-player';
 import { TrackContext } from "../shared/Trackcontext";
 import TextTicker from 'react-native-text-ticker';

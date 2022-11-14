@@ -2,7 +2,7 @@ import React,{useEffect,useState} from "react";
 import { Text, View,ScrollView,SafeAreaView,StyleSheet,TouchableOpacity,ActivityIndicator,Dimensions} from 'react-native';
 import messaging from '@react-native-firebase/messaging';
 import axios from 'axios';
-import { Icon } from "native-base";
+import Icon from 'react-native-vector-icons/Ionicons';
 import TextTicker from 'react-native-text-ticker';
 import FastImage from 'react-native-fast-image';
 

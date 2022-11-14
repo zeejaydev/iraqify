@@ -1,7 +1,7 @@
 import React,{useEffect,useState,useContext} from "react";
 import { Text, View, StyleSheet,TouchableOpacity,ScrollView} from 'react-native';
 import firestore from '@react-native-firebase/firestore'
-import {Icon} from 'native-base';
+import Icon from 'react-native-vector-icons/Ionicons';
 import TrackPlayer, { usePlaybackState }  from 'react-native-track-player';
 import FastImage from 'react-native-fast-image';
 import { QueueManagementContext } from "../shared/queueManagementContext";
@@ -115,7 +115,7 @@ const playPressed = async(item,i)=>{
                                 <TouchableOpacity 
                                 onPress={()=>playPressed(item,index)}
                                 >
-                                    <Icon name='play' style={{color:'#fff'}} />
+                                    <Icon name='play' style={{color:'#fff'}} size={height<=540?20:30} />
                                 </TouchableOpacity>
                                 
                             </View>

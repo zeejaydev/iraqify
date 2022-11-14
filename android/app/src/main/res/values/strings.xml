@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Iraqify</string>
     <string name="facebook_app_id">1257867454608677</string>
+    <string name="facebook_client_token">71ac3f02f8085cfc71749b7c5b12cc34</string>
 </resources>

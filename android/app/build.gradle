@@ -259,7 +259,7 @@ dependencies {
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
-    implementation 'com.facebook.android:facebook-android-sdk:[5,6)'
+    implementation 'com.facebook.android:facebook-android-sdk:latest.release'
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'
     }
@@ -319,5 +319,8 @@ def isNewArchitectureEnabled() {
     // - Set an environment variable `ORG_GRADLE_PROJECT_newArchEnabled=true`
     return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
 }
+project.ext.vectoricons = [
+    iconFontNames: [ 'Ionicons.ttf' ] // Name of the font files you want to copy
+]
 apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 apply plugin: "com.google.gms.google-services"

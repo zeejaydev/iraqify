@@ -3,7 +3,6 @@ import { Easing,StyleSheet} from "react-native";
 import { createStackNavigator,TransitionSpecs,CardStyleInterpolators } from '@react-navigation/stack';
 import SearchScreen from "../screens/Searchscreen";
 import AddToPlaylist from '../screens/AddToPlaylistscreen';
-import {Icon} from 'native-base';
 
 
 
@@ -47,7 +46,6 @@ export default function SearchStack(){
             name="AddToPlaylistScreen" 
             component={AddToPlaylist}
             options={{
-                // headerBackImage:()=>{return(<Icon name='chevron-down-outline' style={{marginLeft:10,color:'#fff'}} />)},
                 headerTintColor:'#fff',
               headerBackTitleVisible:false,
               headerTitle:'قوائم التشغيل',

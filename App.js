@@ -7,7 +7,7 @@ import {PlaylistInfoProvider} from './shared/playlistContext';
 import MainNav from "./routes/mainNav";
 import SplashScreen from 'react-native-splash-screen';
 import VersionCheck from 'react-native-version-check';
-import TrackPlayer,{Capability} from 'react-native-track-player';
+import TrackPlayer,{ Capability, AppKilledPlaybackBehavior } from 'react-native-track-player';
 
 
 const App = () => {
@@ -19,7 +19,9 @@ const App = () => {
     } catch {
       await TrackPlayer.setupPlayer();
       await TrackPlayer.updateOptions({
-        stoppingAppPausesPlayback: true,
+        android: {
+            appKilledPlaybackBehavior: AppKilledPlaybackBehavior.StopPlaybackAndRemoveNotification
+        },
         capabilities: [
           Capability.Play,
             Capability.Pause,

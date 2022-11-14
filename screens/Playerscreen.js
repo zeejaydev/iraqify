@@ -1,12 +1,10 @@
 import React,{useEffect,useState,useContext} from 'react';
 import { View,Text, StyleSheet,Image,Dimensions,TouchableOpacity } from "react-native";
 import TrackPlayer,{useProgress,usePlaybackState,State,RepeatMode,useTrackPlayerEvents,Event}  from 'react-native-track-player';
-import {Icon} from 'native-base';
-// import Slider from "@brlja/react-native-slider";
 import { TrackContext } from "../shared/Trackcontext";
 import { QueueManagementContext } from "../shared/queueManagementContext";
-
-
+import Slider from '@react-native-community/slider';
+import Icon from 'react-native-vector-icons/Ionicons';
 export default function PlayerScreen(){
 
     const [trackInfo,setTrackInfo]=useContext(TrackContext);
@@ -219,11 +217,12 @@ export default function PlayerScreen(){
             flexDirection:'row',
         },
         progress: {
-            height: 2,
+            height: 40,
             minWidth: "60%",
             maxWidth:"70%",
             flexDirection: "row",
-            marginHorizontal:5
+            marginHorizontal:5,
+            justifyContent:'center'
           },
         progressStopped: {
             height: 2,
@@ -242,7 +241,12 @@ export default function PlayerScreen(){
             color:'white',
             marginRight:5,
             fontWeight:'bold',
-            fontSize:height<=600?11:15
+            fontSize:height<=600?11:15,
+        },
+        durationContainer:{
+            display: 'flex',
+            height: 40,
+            justifyContent:'center'
         },
         repeatbutton:{
             position:'absolute',
@@ -268,7 +272,7 @@ export default function PlayerScreen(){
                     
                     <View style={styles.progressBar}>
 
-                                <View>
+                                <View style={styles.durationContainer}>
                                     <Text style={styles.durationText}>
                                         {new Date(position * 1000).toISOString().substr(14, 5)}
                                     </Text>
@@ -276,9 +280,9 @@ export default function PlayerScreen(){
 
                     
                                     <View style={styles.progress}>
-                                        {/* <Slider
+                                        <Slider
                                             disabled={sliderDis}
-                                            style={{width:'100%',height:25}}
+                                            style={{width:'100%',height:40}}
                                             thumbTintColor='#fff'
                                             minimumValue={0}
                                             maximumValue={1}
@@ -287,21 +291,22 @@ export default function PlayerScreen(){
                                             maximumTrackTintColor='#fff'
                                             onSlidingStart={slidingStarted}
                                             onSlidingComplete={slidingCompleted}
-                                        /> */}
+                                            tapToSeek
+                                        />
                                     </View>
                                    
-
-
-                                    <Text style={styles.durationText}>
-                                        {new Date((duration - position) * 1000).toISOString().substr(14, 5)}
-                                    </Text>
+                                    <View style={styles.durationContainer}>
+                                        <Text style={styles.durationText}>
+                                            {new Date((duration - position) * 1000).toISOString().substr(14, 5)}
+                                        </Text>
+                                    </View>
 
                     </View>
     
                     <View style={styles.controlers}>
                         <View style={{marginHorizontal:8}}>
                             <TouchableOpacity onPress={shufflePressed} disabled={disableShuffle}>
-                                <Icon name="ios-shuffle-sharp" style={{color:queManagement.shuffle===1?'gray':'white',fontSize:height<=600?30:50}}/>
+                                <Icon name="ios-shuffle" style={{color:queManagement.shuffle===1?'gray':'white',fontSize:height<=600?30:50}}/>
                             </TouchableOpacity>
                         </View>
                         <View>

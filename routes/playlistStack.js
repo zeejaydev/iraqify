@@ -3,7 +3,6 @@ import { Easing,StyleSheet,View,Text,Platform} from "react-native";
 import { createStackNavigator,CardStyleInterpolators } from '@react-navigation/stack';
 import PlaylistScreen from "../screens/Playlistscreen";
 import MyPlaylist from '../screens/Myplaylist';
-import {Icon} from 'native-base';
 
 
 
@@ -56,7 +55,6 @@ export default function PlaylistStack(){
             name="Playlist" 
             component={MyPlaylist}
             options={{
-                // headerBackImage:()=>{return(<Icon name='chevron-down-outline' style={{marginLeft:10,color:'#fff'}} />)},
                 headerTintColor:'#fff',
               headerBackTitleVisible:false,
               headerTitle:'',

@@ -1175,11 +1175,13 @@ PODS:
     - React
   - react-native-safe-area-context (3.3.0):
     - React-Core
+  - react-native-slider (4.3.3):
+    - React-Core
   - react-native-splash-screen (3.2.0):
     - React
-  - react-native-track-player (3.1.0):
+  - react-native-track-player (3.2.0):
     - React-Core
-    - SwiftAudioEx (= 0.15.2)
+    - SwiftAudioEx (= 0.15.3)
   - react-native-version-check (3.4.2):
     - React
   - React-perflogger (0.70.5)
@@ -1318,8 +1320,6 @@ PODS:
     - React-RCTImage
   - RNSVG (12.1.1):
     - React
-  - RNVectorIcons (7.1.0):
-    - React
   - SDWebImage (5.11.1):
     - SDWebImage/Core (= 5.11.1)
   - SDWebImage/Core (5.11.1)
@@ -1327,7 +1327,7 @@ PODS:
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.10)
   - SocketRocket (0.6.0)
-  - SwiftAudioEx (0.15.2)
+  - SwiftAudioEx (0.15.3)
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
     - Yoga (~> 1.14)
@@ -1385,6 +1385,7 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - react-native-fbsdk (from `../node_modules/react-native-fbsdk`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
+  - "react-native-slider (from `../node_modules/@react-native-community/slider`)"
   - react-native-splash-screen (from `../node_modules/react-native-splash-screen`)
   - react-native-track-player (from `../node_modules/react-native-track-player`)
   - react-native-version-check (from `../node_modules/react-native-version-check`)
@@ -1414,7 +1415,6 @@ DEPENDENCIES:
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNSVG (from `../node_modules/react-native-svg`)
-  - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -1514,6 +1514,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-fbsdk"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
+  react-native-slider:
+    :path: "../node_modules/@react-native-community/slider"
   react-native-splash-screen:
     :path: "../node_modules/react-native-splash-screen"
   react-native-track-player:
@@ -1572,8 +1574,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-screens"
   RNSVG:
     :path: "../node_modules/react-native-svg"
-  RNVectorIcons:
-    :path: "../node_modules/react-native-vector-icons"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -1643,8 +1643,9 @@ SPEC CHECKSUMS:
   React-logger: fdda34dd285bdb0232e059b19d9606fa0ec3bb9c
   react-native-fbsdk: 8e92c7a334fd8d9c2b5d8b8fcd7ae2c314161099
   react-native-safe-area-context: 61c8c484a3a9e7d1fda19f7b1794b35bbfd2262a
+  react-native-slider: 7d19220da2f2ae7cbb9aa80127cb73c597fa221f
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
-  react-native-track-player: 12c7bdc776f11c382c11fecdade3743ebe0af78c
+  react-native-track-player: 0c26d981b5097910486cbbeb6d8f5352d41be069
   react-native-version-check: d8b8900e6ce03ae1568cb22ef9451f2508188883
   React-perflogger: e68d3795cf5d247a0379735cbac7309adf2fb931
   React-RCTActionSheet: 05452c3b281edb27850253db13ecd4c5a65bc247
@@ -1672,11 +1673,10 @@ SPEC CHECKSUMS:
   RNReanimated: 2a91e85fcd343f8af3c58d3425b99fdd285590a5
   RNScreens: 34cc502acf1b916c582c60003dc3089fa01dc66d
   RNSVG: 551acb6562324b1d52a4e0758f7ca0ec234e278f
-  RNVectorIcons: bc69e6a278b14842063605de32bec61f0b251a59
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
-  SwiftAudioEx: 1974c2eb942c9b54f58c3d3f5d704da527e2c5ba
+  SwiftAudioEx: 83eabba2940924fc1c0d5cb0896049921365229c
   Yoga: eca980a5771bf114c41a754098cd85e6e0d90ed7
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 

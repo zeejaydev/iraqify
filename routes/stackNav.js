@@ -5,7 +5,7 @@ import SongScreen from '../screens/Songscreen';
 import HomeScreen from "../screens/Homescreen";
 import AlbumScreen from '../screens/Albumscreen';
 import AddToPlaylist1 from '../screens/AddToPlaylistscreen1';
-import {Icon} from 'native-base';
+import Icon from 'react-native-vector-icons/Ionicons';
 import TrackPlayer  from 'react-native-track-player';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
@@ -129,7 +129,7 @@ export default function StackNav({navigation}){
             name="SongScreen" 
             component={SongScreen}
             options={{
-                headerBackImage:()=>{return(<Icon name='chevron-back-outline' style={styles.icon} />)},
+                headerBackImage:()=>{return(<Icon name='chevron-back-outline' style={styles.icon} size={height<=540?25:30} />)},
                 headerBackTitleVisible:false,
                 headerTitle:'',
                 headerStyle:{

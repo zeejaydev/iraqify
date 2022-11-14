@@ -1,6 +1,6 @@
 import React,{useEffect,useState} from "react";
 import {View,Text,StyleSheet,Image,TouchableOpacity,ScrollView,Dimensions,ActivityIndicator} from 'react-native';
-import {Icon} from 'native-base';
+import Icon from 'react-native-vector-icons/Ionicons';
 import TrackPlayer, { usePlaybackState }  from 'react-native-track-player';
 import database from '@react-native-firebase/database';
 import FastImage from 'react-native-fast-image';
@@ -232,7 +232,6 @@ export default function SongScreen ({route,navigation}){
                                 onPress={()=>navigation.navigate('AddToPlaylistScreen1',{TrackObj})}
                                 style={{padding:10}}
                                 >
-                                    {/* <Icon name='ellipsis-vertical' style={styles.icon} /> */}
                                     <Image source={require('../shared/icons8-add-list-60.png')} style={styles.addSong}/>
                                 </TouchableOpacity>
                                 

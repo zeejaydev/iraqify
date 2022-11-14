@@ -2,7 +2,7 @@ import React,{useEffect,useState} from "react";
 import { Text, View,StyleSheet,TouchableOpacity,Image,ScrollView,ActivityIndicator,Modal,Dimensions,TextInput,Keyboard} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import firebase from '@react-native-firebase/app';
-import {Icon} from 'native-base';
+import Icon from 'react-native-vector-icons/Ionicons';
 import Animated from 'react-native-reanimated';
 import BottomSheet from 'reanimated-bottom-sheet';
 

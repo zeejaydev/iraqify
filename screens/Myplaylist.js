@@ -1,6 +1,6 @@
 import React,{useEffect,useState,useContext} from "react";
 import { Text, View,StyleSheet,ScrollView,TouchableOpacity,ImageBackground,Image,Dimensions} from 'react-native';
-import {Icon} from 'native-base';
+import Icon from 'react-native-vector-icons/Ionicons';
 import TrackPlayer, { usePlaybackState,Event }  from 'react-native-track-player';
 import firestore from '@react-native-firebase/firestore';
 import firebase from '@react-native-firebase/app';

@@ -3,7 +3,7 @@ import { Text,
   View, StyleSheet,TextInput,
   TouchableWithoutFeedback,Keyboard,TouchableOpacity,Image,ImageBackground,
   ScrollView,ActivityIndicator,Platform,Dimensions} from 'react-native';
-import {Icon} from 'native-base';
+  import Icon from 'react-native-vector-icons/Ionicons';
 import TrackPlayer, { usePlaybackState }  from 'react-native-track-player';
 // import { TrackContext } from "../shared/Trackcontext";
 import database from '@react-native-firebase/database';

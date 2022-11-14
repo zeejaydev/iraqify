@@ -1,7 +1,7 @@
 import React from 'react'
 import { Text, View,Image} from 'react-native';
 import auth from '@react-native-firebase/auth';
-import {Icon} from 'native-base'
+import Icon from 'react-native-vector-icons/Ionicons';
 
 export default function QueueScreen ({route}) {
     const user = auth().currentUser 

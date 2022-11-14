@@ -3,7 +3,7 @@ import { Text, View,ScrollView,StyleSheet,TouchableOpacity,Dimensions,TextInput,
 import {PlaylistInfoProvider,PlaylistContext } from "../shared/playlistContext";
 import Animated from 'react-native-reanimated';
 import BottomSheet from 'reanimated-bottom-sheet';
-import { Icon } from "native-base";
+import Icon from 'react-native-vector-icons/Ionicons';
 import firestore from '@react-native-firebase/firestore';
 import firebase from '@react-native-firebase/app';
 

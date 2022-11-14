@@ -6,7 +6,7 @@ import { createStackNavigator,TransitionSpecs,CardStyleInterpolators } from '@re
 import { NavigationContainer } from '@react-navigation/native';
 import PlayerScreen from '../screens/Playerscreen';
 import Profile from '../screens/Profilescreen';
-import {Icon} from 'native-base';
+import Icon from 'react-native-vector-icons/Ionicons';
 import auth from '@react-native-firebase/auth';
 import LoginScreen from '../screens/Loginscreen';
 import Signup from '../screens/signupComponent/signup';
@@ -98,7 +98,7 @@ return(
               component={PlayerScreen}
               
               options={{
-                headerBackImage:()=>{return(<Icon name='chevron-down-outline' style={{marginLeft:10,color:'#fff'}} />)},
+                headerBackImage:()=>{return(<Icon name='chevron-down-outline' style={{marginLeft:10,color:'#fff'}} size={30} />)},
                 headerBackTitleVisible:false,
                 headerTitle:'Playing',
                 headerTitleAlign:'center',
@@ -170,7 +170,7 @@ return(
           name='Signup'
           component={Signup}
           options={{
-            headerBackImage:()=>{return(<Icon name='chevron-down-outline' style={{marginLeft:10,color:'#fff'}} />)},
+            headerBackImage:()=>{return(<Icon name='chevron-down-outline' style={{marginLeft:10,color:'#fff'}} size={30}/>)},
                 headerBackTitleVisible:false,
                 headerTitle:'Sign Up',
                 headerTitleAlign:'center',
@@ -190,7 +190,7 @@ return(
           name='Signin'
           component={Signin}
           options={{
-            headerBackImage:()=>{return(<Icon name='chevron-down-outline' style={{marginLeft:10,color:'#fff'}} />)},
+            headerBackImage:()=>{return(<Icon name='chevron-down-outline' style={{marginLeft:10,color:'#fff'}} size={30}/>)},
                 headerBackTitleVisible:false,
                 headerTitle:'Log In',
                 headerTitleAlign:'center',

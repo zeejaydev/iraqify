@@ -5,7 +5,7 @@ import { BottomTabBar, createBottomTabNavigator } from '@react-navigation/bottom
 import StackNav from './stackNav';
 import SearchStack from './searchStack';
 import PlaylistStack from "./playlistStack";
-import {Icon} from 'native-base';
+import Icon from 'react-native-vector-icons/Ionicons';
 import Playerwidget from '../shared/Playerwidget'
 
 
