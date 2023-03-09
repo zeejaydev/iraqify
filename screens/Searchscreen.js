@@ -1,21 +1,29 @@
 import React,{useState,useCallback,useEffect} from "react";
 import { Text, 
   View, StyleSheet,TextInput,
-  TouchableWithoutFeedback,Keyboard,TouchableOpacity,Image,ImageBackground,
+  TouchableWithoutFeedback,Keyboard,TouchableOpacity,Image,
   ScrollView,ActivityIndicator,Platform,Dimensions} from 'react-native';
   import Icon from 'react-native-vector-icons/Ionicons';
 import TrackPlayer, { usePlaybackState }  from 'react-native-track-player';
-// import { TrackContext } from "../shared/Trackcontext";
 import database from '@react-native-firebase/database';
 import FastImage from 'react-native-fast-image'
 import analytics from '@react-native-firebase/analytics';
 import { debounce } from "lodash";
+import { Texts } from "../types";
+import { language } from "../utils/langCheck";
 
-const {height}=Dimensions.get('window')
+const {height}=Dimensions.get('window');
+
+const addImageSize = height > 1000 ? 33 : 25;
+const textSize = height > 1000 ? 18 : 15;
+const imageSize = height > 1000 ? 90 : 70;
+const bgSize = height > 1000 ? 90 : 70 ;
+const inpuTextSize = height > 1000 ? 20 : 15;
+
+const en = language() === 'en' ? true : false;
 
 export default function SearchScreen ({navigation}) {
   const handler = useCallback(debounce(sendAnalytics, 500), [searchValue]);
-
   const [searchValue,setSearchValue]=useState('');
 
   const playbackState = usePlaybackState();
@@ -75,7 +83,7 @@ const handleSearch = (text)=>{
   handler()
 }
 
-    
+
     return (
       <TouchableWithoutFeedback onPress={searchValue===''?Keyboard.dismiss:null}>
       <View style={styles.container}>
@@ -90,7 +98,7 @@ const handleSearch = (text)=>{
           </View>
           <TextInput 
             style={styles.input} 
-            placeholder='ابحث عن اسم اغنيه او فنان' 
+            placeholder={Texts[`${language()}-search`]}
             onChangeText={text=>handleSearch(text)}
             value={searchValue}
             placeholderTextColor='#fff'
@@ -112,30 +120,35 @@ const handleSearch = (text)=>{
 
         
         <ScrollView
-           
+        
         >
           
           {
             isLoading?
-            <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
-            <ActivityIndicator size='large' color='#fff' />
+            <View style={styles.loading}>
+              <ActivityIndicator size='large' color='#fff' />
             </View>
             :
               
               data.filter((item)=>{
                 if(searchValue === ''){
                   return null
-                }else if(item.songName.toLowerCase().includes(searchValue.toLocaleLowerCase())){
+                }else if(item.songName.toLowerCase().includes(searchValue.toLocaleLowerCase()) || item.altSongName?.toLowerCase().includes(searchValue.toLocaleLowerCase())){
                   return item
-                }else if (item.artistName.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase())){
+                }else if (item.artistName.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase()) || item.altArtistName?.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase())){
                   return item
                 }
               }).map((item)=>{
+                //Futuer update
+                // const artistName = item.altArtistName && en ? item.altArtistName : item.artistName;
+                // const songName = item.altSongName && en ? item.altSongName : item.songName;
+                const artistName = item.artistName;
+                const songName = item.songName;
 
                 const TrackObj = {
                   id:item.id,
-                  title:item.songName,
-                  artist:item.artistName,
+                  title:songName,
+                  artist:artistName,
                   artwork:item.imgUri,
                   url:item.songUrl,
                   duration:item.duration
@@ -147,18 +160,23 @@ const handleSearch = (text)=>{
               
                 <View onStartShouldSetResponder={() => true} key={item.id} style={styles.results}>
                 
-                    <View style={{flex:1,marginLeft:20}} >
+                    <View style={{marginLeft:Platform.OS === 'android' ? 0 : en ? 0 : 20,marginRight: Platform.OS === 'android' ? 20 : en ? 20 : 0}} >
                         <TouchableOpacity style={{width:'18%'}} onPress={()=>{navigation.navigate('AddToPlaylistScreen',{TrackObj})}} >
                           <Image source={require('../shared/icons8-add-list-60.png')} style={styles.addImg} />
                         </TouchableOpacity>
                     </View>   
                   
 
-                  <TouchableOpacity style={{alignItems:'center',flexDirection:'row'}} onPress={()=>playSelectedSong(TrackObj)}>
-                  <View style={{alignItems:'flex-end',marginHorizontal:8}}>
+                  <TouchableOpacity 
+                    style={{alignItems:'center',
+                    flexDirection:Platform.OS === 'android' ? 'row-reverse' : en ?'row-reverse':'row',
+                    flex:1,
+                    justifyContent:'flex-end'}} 
+                    onPress={()=>playSelectedSong(TrackObj)}>
+                  <View style={{alignItems: Platform.OS === 'android' ? 'flex-start' : en ?'flex-start':'flex-end',marginHorizontal:8}}>
                     
-                    <Text style={styles.titleText}>{item.songName}</Text>
-                    <Text style={styles.artistText}>{item.artistName}</Text>
+                    <Text style={styles.titleText}>{songName}</Text>
+                    <Text style={styles.artistText}>{artistName}</Text>
                     
                   </View>
                   {/* <ImageBackground source={{uri:item.imgUri}} style={styles.resultsImg}> */}
@@ -213,8 +231,9 @@ const styles = StyleSheet.create({
     borderRightWidth:0,
     width:'80%',
     backgroundColor:'#3b3b3b',
-    textAlign: 'right',
-    paddingHorizontal:15
+    textAlign: Platform.OS === 'android' && en ? 'left' :'right' ,
+    paddingHorizontal:15,
+    fontSize:inpuTextSize
   },
   title:{
     color:'#fff',
@@ -235,6 +254,13 @@ const styles = StyleSheet.create({
     marginTop:5,
     flex:1,
   },
+  loading:{
+    flex:1,
+    justifyContent:'center',
+    alignItems:'center',
+    minWidth: '100%',
+    minHeight: '100%'
+  },
   results:{
     flex:1/2,
     minWidth:'100%',
@@ -243,16 +269,16 @@ const styles = StyleSheet.create({
     borderWidth:1,
     borderColor:'#3b3b3b',
     backgroundColor:'#3b3b3b',
-    flexDirection:'row',
+    flexDirection: Platform.OS === 'android' ? 'row-reverse' : en ?'row-reverse':'row',
     alignItems:'center',
     justifyContent:'flex-end',
   },
   resultsImg:{
-    width:height<=544?40:70,
-    height:height<=544?40:70
+    width:height<=544?40:imageSize,
+    height:height<=544?40:imageSize,
   },
   iconBackground:{
-    height:height<=544?40:70,
+    height:height<=544?40:bgSize,
     backgroundColor:'rgba(0,0,0,0.3)',
     justifyContent:'center',
     alignItems:'center'
@@ -262,20 +288,22 @@ const styles = StyleSheet.create({
     fontSize:height<=544?15:30
   },
   addImg:{
-    width:height<=544?15:25,
-    height:height<=544?15:25
+    width:height<=544?15:addImageSize,
+    height:height<=544?15:addImageSize
   },
   titleText:{
-    fontSize:height<=544?10:15,
+    fontSize:height<=544?10:textSize,
     color:'#fff',
     marginVertical:3,
-    fontWeight:'bold'
+    fontWeight:'bold',
+    textTransform: 'capitalize'
   },
   artistText:{
-    fontSize:height<=544?10:15,
+    fontSize:height<=544?10:textSize,
     color:'#b2b2b2',
     marginVertical:3,
-    fontWeight:'bold'
+    fontWeight:'bold',
+    textTransform: 'capitalize'
   }
   
 })

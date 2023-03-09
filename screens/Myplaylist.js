@@ -1,22 +1,33 @@
 import React,{useEffect,useState,useContext} from "react";
-import { Text, View,StyleSheet,ScrollView,TouchableOpacity,ImageBackground,Image,Dimensions} from 'react-native';
+import { Text, View,StyleSheet,ScrollView,TouchableOpacity,Image,Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import TrackPlayer, { usePlaybackState,Event }  from 'react-native-track-player';
+import TrackPlayer, { usePlaybackState }  from 'react-native-track-player';
 import firestore from '@react-native-firebase/firestore';
 import firebase from '@react-native-firebase/app';
 import FastImage from 'react-native-fast-image'
 import { QueueManagementContext } from "../shared/queueManagementContext";
+import { Instructions, SongScreenText, Texts } from "../types";
+import { language } from "../utils/langCheck";
 
-const {height}=Dimensions.get('window')
+const {height}=Dimensions.get('window');
+
+const iconSize = height > 1000 ? 25 : 18;
+const textSize = height > 1000 ? 18 : 15;
+const smallTextSize = height > 1000 ? 15 : 12;
+const headerImagesSize = height > 1000 ? 100 : 50;
+const bigImageSize = height > 1000 ? 200 : 100;
+const imageSize = height > 1000 ? 80 : 50;
+const instructionIconSize = height > 1000 ? 60 : 35;
+const buttonHeight = height > 1000 ? 50 : 45 ;
 
 export default function MyPlaylist ({route}) {
     const [queManagement,setQueManagement]=useContext(QueueManagementContext);
     const user = firebase.auth().currentUser;
     const PlaylistName = route.params.item;
     const playbackState = usePlaybackState();
-    const [tracks2,settracks2] = useState()
-    const [docId,setDocId]=useState()
-    const [editList,setEditList]=useState(false)
+    const [tracks2,settracks2] = useState();
+    const [docId,setDocId]=useState();
+    const [editList,setEditList]=useState(false);
 
     useEffect(()=>{
         const user = firebase.auth().currentUser
@@ -33,7 +44,7 @@ export default function MyPlaylist ({route}) {
    
       return ()=>subscribe()
     },[])
-   
+    const headerPic = tracks2 && tracks2.Tracks.slice(-4).map(item=>item.artwork);
 
     const deletePressed = (item)=>{
         firebase.firestore().collection('Users').doc(user.uid).collection('Playlists').doc(docId).update({
@@ -44,20 +55,20 @@ export default function MyPlaylist ({route}) {
 
     
 
-    if(tracks2== undefined || tracks2== null || tracks2.Tracks.length == 0)return<View style={{
+    if(tracks2== undefined || tracks2== null || tracks2.Tracks.length === 0)return<View style={{
         flex:1, 
         backgroundColor:'#121212',
         justifyContent:'center',
         alignItems:'center'
     }}>
-        <Text style={{color:'#fff',fontWeight:'bold',textAlign:'center',lineHeight:20,marginVertical:10}}>قم باضافة اغاني لهذه القائمه عن طريق البحث او القائمه الرئيسيه
-        ثم الضغط على 
+        <Text style={{color:'#fff',fontWeight:'bold',textAlign:'center',lineHeight:20,marginVertical:10,fontSize:textSize}}>
+            {Instructions[`${language()}-inst`]}
         </Text>
-        <Image source={require('../shared/icons8-add-list-60.png')} style={{width:18,height:18}}/>
-        <Text style={{color:'#fff',fontWeight:'bold',textAlign:'center',lineHeight:20,marginVertical:10}}>
-            سترى اسم هذه القائمة ثم اضغط على
+        <Image source={require('../shared/icons8-add-list-60.png')} style={{width:instructionIconSize,height:instructionIconSize}}/>
+        <Text style={{color:'#fff',fontWeight:'bold',textAlign:'center',lineHeight:20,marginVertical:10,fontSize:textSize}}>
+            {Instructions[`${language()}-inst2`]}
         </Text>
-        <Icon name='add' style={{color:'#fff',fontSize:20}} />
+        <Icon name='add' style={{color:'#fff'}} size={instructionIconSize} />
     </View>
     
     const playPressed = async(item,i)=>{
@@ -160,18 +171,18 @@ const styles = StyleSheet.create({
     },
     button:{
         backgroundColor:'#1db954',
-        padding:height<=544?5:13,
+        padding:height<=544?5:smallTextSize,
         width:height<=544?100:150,
         borderRadius:50,
-        height:height<=544?27:45,
+        height:height<=544?27:buttonHeight,
         marginHorizontal:10,
         marginTop:10,
     },
     button2:{
         backgroundColor:!editList?'#3b3b3b':'#f94144',
-        padding:height<=544?5:13,
+        padding:height<=544?5:smallTextSize,
         width:height<=544?100:150,
-        height:height<=544?27:45,
+        height:height<=544?27:buttonHeight,
         marginTop:10,
         borderRadius:50,
         marginHorizontal:10,
@@ -180,46 +191,73 @@ const styles = StyleSheet.create({
         color:'#fff',
         textAlign:'center',
         fontWeight:'bold',
-        fontSize:15,
         textTransform:'uppercase',
-        fontSize:height<=544?10:15
+        fontSize:height<=544?10:textSize
     },
     imgBack:{
-        width:height<=544?35:50,
-        height:height<=544?35:50,
-        marginRight:10
+        width:height<=544?35:imageSize,
+        height:height<=544?35:imageSize,
+        marginHorizontal:10
     },
     titleText:{
-        fontSize:height<=544?10:15,
+        fontSize:height<=544?10:textSize,
         color:'#fff',
         marginVertical:3,
         fontWeight:'bold'
       },
-      artistText:{
-        fontSize:height<=544?10:13,
+    artistText:{
+        fontSize:height<=544?10:smallTextSize,
         color:'#b2b2b2',
         marginVertical:3,
         fontWeight:'bold'
       },
-      addSong:{
+    addSong:{
         width:18,
         height:18,
         
-    }, 
+    },
+    headerPic:{
+        display: 'flex',
+        maxWidth: bigImageSize,
+        flexDirection: 'row',
+        flexWrap:'wrap',
+        margin:0,
+        padding:0
+    },
+    images:{
+        width:headerImagesSize,
+        height:headerImagesSize
+    } 
 })
 
     return(
         <View style={styles.container}>
             <View style={styles.header}>
-                <Image source={require('../shared/icons8-video-playlist-100.png')} style={{width:height<=544?70:100,height:height<=544?70:100}} />
+                {headerPic ? 
+                <View style={styles.headerPic}>
+                    {headerPic.map((imgUrl,index)=>(
+                        <FastImage
+                        key={index}
+                         style={styles.images}
+                         source={{
+                             uri: imgUrl,
+                             priority: FastImage.priority.high,
+                         }}
+                         resizeMode={FastImage.resizeMode.contain}
+                     ></FastImage>
+                    ))}
+                </View>
+                :
+                <Image source={require('../shared/icons8-video-playlist-100.png')} style={{width:height<=544?70:bigImageSize,height:height<=544?70:bigImageSize}} />
+                }
             </View>
             
             <View style={{marginVertical:10,flexDirection:'row'}}>
                 <TouchableOpacity style={styles.button} onPress={playTheListPressed}>
-                    <Text style={styles.buttonText}>تشغيل القائمه</Text>
+                    <Text style={styles.buttonText}>{SongScreenText[`${language()}-playall`]}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.button2} onPress={editListPressed}>
-                    <Text style={styles.buttonText}>{!editList ? 'تعديل' : 'انهاء'}</Text>
+                    <Text style={styles.buttonText}>{!editList ? Texts[`${language()}-edit`] : Texts[`${language()}-done`]}</Text>
                 </TouchableOpacity>
             </View>
 
@@ -235,8 +273,8 @@ const styles = StyleSheet.create({
                     const Track = item
                     return(
                           
-                        <View style={{flex:1,minWidth:'100%',flexDirection:'row',marginVertical:8}} key={index}>
-                            <View style={{marginLeft:20,alignItems:'center',justifyContent:'center'}}>
+                        <View style={{flex:1,minWidth:'100%',flexDirection:Platform.OS === 'android' && language() === 'en' ? 'row-reverse' :'row',marginVertical:8}} key={index}>
+                            <View style={{marginHorizontal:20,alignItems:'center',justifyContent:'center'}}>
                                 <TouchableOpacity 
                                 onPress={()=>playPressed(item,index)}
                                 >
@@ -244,7 +282,7 @@ const styles = StyleSheet.create({
                                 </TouchableOpacity>
                                 
                             </View>
-                            <View style={{flex:1,alignItems:'flex-end',marginRight:10}}>
+                            <View style={{flex:1,alignItems:Platform.OS === 'android' ? 'flex-start' :'flex-end'}}>
                             
                                 <Text style={styles.titleText} >{Track.artist}</Text>
                                 <Text style={styles.artistText} >{Track.title}</Text>
@@ -264,7 +302,7 @@ const styles = StyleSheet.create({
                             >
                               <View style={{flex:1,justifyContent:'center',alignItems:'center',backgroundColor:'rgba(0,0,0,.5)'}}>
                                   <TouchableOpacity onPress={()=>deletePressed(item)}>
-                                      <Icon name='trash-outline' style={{fontSize:height<=544?12:18,color:'#f94144'}} />
+                                      <Icon name='trash-outline' style={{fontSize:height<=544?12:iconSize,color:'#f94144'}} />
                                   </TouchableOpacity>
                                  
                               </View>

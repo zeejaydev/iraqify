@@ -1,13 +1,17 @@
-import React,{useEffect,useState,useContext} from 'react';
+import React,{useContext} from 'react';
 import {View,Text,StyleSheet,TouchableOpacity,Dimensions,ActivityIndicator} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import TrackPlayer,{usePlaybackState,useProgress, useTrackPlayerEvents,Capability,State,Event } from 'react-native-track-player';
+import TrackPlayer,{usePlaybackState,useProgress, useTrackPlayerEvents,State,Event } from 'react-native-track-player';
 import { TrackContext } from "../shared/Trackcontext";
 import TextTicker from 'react-native-text-ticker';
+import { Texts } from '../types';
+import { language } from '../utils/langCheck';
 
 const {width,height}=Dimensions.get('window')
 
-
+const containerSize = height > 1000 ? 80 : 60;
+const iconSize = height > 1000 ? 40 : 30;
+const textSize = height > 1000 ? 18 : 15;
 
 export default function PlayerWidget({navigation}){
 
@@ -90,14 +94,14 @@ export default function PlayerWidget({navigation}){
             </View>
             </View>
             <TouchableOpacity style={{padding:8}} onPress={()=>{navigation.navigate('Playerscreen',{})}}>
-                <Icon name='chevron-up' style={{color:'#fff',fontSize:height<=600?20:30}} />
+                <Icon name='chevron-up' style={{color:'#fff',fontSize:height<=600?20:iconSize}} />
             </TouchableOpacity>
             
             
             <View style={{flexDirection:'row',flex:0.80,alignItems:'center',justifyContent:'center'}}>
                 {
                     trackInfo.songTitle === '' || trackInfo.artistName === ''?
-                    <Text style={styles.noSongText}>لا يوجد اغنيه بقائمة التشغيل</Text>
+                    <Text style={styles.noSongText}>{Texts[`${language()}-no-song`]}</Text>
                    
                     :
                     <React.Fragment  >
@@ -128,16 +132,16 @@ export default function PlayerWidget({navigation}){
                 :
                 playbackState===State.Playing ?
                 <TouchableOpacity style={{padding:8}} onPress={togglePause}>
-                    <Icon name='pause-circle-outline' style={{color:'#fff',fontSize:height<=600?20:30}} />
+                    <Icon name='pause-circle-outline' style={{color:'#fff',fontSize:height<=600?20:iconSize}} />
                 </TouchableOpacity>
                 :
                 playbackState===State.Paused?
                 <TouchableOpacity style={{padding:8}} onPress={togglePlay}>
-                    <Icon name='play-circle-outline' style={{color:'#fff',fontSize:height<=600?20:30}} />
+                    <Icon name='play-circle-outline' style={{color:'#fff',fontSize:height<=600?20:iconSize}} />
                 </TouchableOpacity>
                 :
                 <TouchableOpacity style={{padding:8}} onPress={togglePlay} disabled={playbackState===1?true:false}>
-                    <Icon name='play-circle-outline' style={{color:'#fff',fontSize:height<=600?20:30}} />
+                    <Icon name='play-circle-outline' style={{color:'#fff',fontSize:height<=600?20:iconSize}} />
                 </TouchableOpacity>
             }
             
@@ -149,7 +153,7 @@ export default function PlayerWidget({navigation}){
 const styles = StyleSheet.create({
     container:{
         backgroundColor:'#212121',
-        height:height<=600?40:60,
+        height:height<=600?40:containerSize,
         flexDirection:'row',
         justifyContent:'space-around',
         alignItems:'center',
@@ -176,8 +180,9 @@ const styles = StyleSheet.create({
         
       },
       noSongText:{
-        fontSize:height<=600?10:15,
+        fontSize:height<=600?10:textSize,
         color:'#fff',
-        fontWeight:'bold'
+        fontWeight:'bold',
+        textTransform:'capitalize'
       }
     })

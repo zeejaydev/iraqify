@@ -139,8 +139,8 @@ android {
         applicationId "com.iraqify"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 8
-        versionName "2.0.1"
+        versionCode 9
+        versionName "2.5.0"
         multiDexEnabled true
           buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
         if (isNewArchitectureEnabled()) {

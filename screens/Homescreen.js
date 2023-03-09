@@ -1,24 +1,33 @@
 import React,{useEffect,useState} from "react";
-import { Text, View,ScrollView,SafeAreaView,StyleSheet,TouchableOpacity,ActivityIndicator,Dimensions} from 'react-native';
+import { Text, View,ScrollView,SafeAreaView,
+        StyleSheet,TouchableOpacity,ActivityIndicator,
+        Dimensions } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/Ionicons';
 import TextTicker from 'react-native-text-ticker';
 import FastImage from 'react-native-fast-image';
+import { HomePageTitles } from "../types";
+import { language } from "../utils/langCheck";
 
 const {height,width}=Dimensions.get('window');
+
+const imageSize = height > 1000 ? 200 : 135;
+const textSize = height > 1000 ? 18 : 13;
+const titleSize = height > 1000 ? 27 : 20;
+const tuckedTitle = height > 1000 ? 210 : 135;
+
 export default function HomeScreen ({navigation}) {
 
   const [isLoading,setIsLoading]=useState(true);
   const [networkError,setNetworkError]=useState(false);
   const [allData,setAllData]=useState([]);
 
-
   const PageRefresh = ()=>{
     setNetworkError(false);
     setIsLoading(true);
      
-    axios.get('https://iraqify-backend.herokuapp.com/api/getdoc',{timeout:30000}).then(
+    axios.get('https://iraqify-backend.com/api/getdoc',{timeout:30000}).then(
       (allData)=>{
         console.log('gotdata');
         setAllData(allData.data);
@@ -45,7 +54,7 @@ export default function HomeScreen ({navigation}) {
 
 
   useEffect(()=>{
-    axios.get('https://iraqify-backend.herokuapp.com/api/getdoc',{timeout:30000}).then(
+    axios.get('https://iraqify-backend.com/api/getdoc',{timeout:30000}).then(
       (allData)=>{
         console.log('gotdata');
         setAllData(allData.data);
@@ -106,16 +115,17 @@ export default function HomeScreen ({navigation}) {
                 showsVerticalScrollIndicator={false}
               >
               {
-                allData.map((cat,index)=>{                 
+                allData.map((cat,index)=>{                
                   if(cat.playlists.length > 0){
                     return( 
                       <View style={{flex:1/3}} key={index}>
-                        <Text style={styles.title}>{cat.name}</Text>
+                        <Text style={styles.title}>{HomePageTitles[`${language()}-${cat.name}`]}</Text>
                         <ScrollView style={{flex:1}} horizontal showsHorizontalScrollIndicator={false}>
                           {
                             cat.playlists.map( (item,i)=>{
                               const img=item.artwork;
                               const name = item.playlist_name;
+                              const altName = item.altName || '';
                               return(
                                 <TouchableOpacity onPress={()=>{navigation.navigate('AlbumScreen',{name,img});}} key={i}>
                                   <FastImage
@@ -126,6 +136,9 @@ export default function HomeScreen ({navigation}) {
                                       }}
                                       resizeMode={FastImage.resizeMode.contain}
                                   />
+                                  {/* Future update
+                                    <Text style={styles.text}>{altName && language() === 'en' ? altName : name}</Text> 
+                                   */}
                                   <Text style={styles.text}>{name}</Text>
                                 </TouchableOpacity>
                               );
@@ -137,7 +150,7 @@ export default function HomeScreen ({navigation}) {
                   }
                   return(
                         <View style={{flex:1/3}} key={index}>
-                          <Text style={styles.title}>{cat.name}</Text>
+                          <Text style={styles.title}>{HomePageTitles[`${language()}-${cat.name}`]}</Text>
                           <ScrollView style={{flex:1}} horizontal showsHorizontalScrollIndicator={false}>
                             {
                               cat.tracks.map( (item,i)=>{
@@ -147,8 +160,10 @@ export default function HomeScreen ({navigation}) {
                                 const url = item.song_url;
                                 const id=item.id;
                                 const duration = item.duration;
+                                const altArtistName = item.altArtistName || ""
+                                const altSongTitle = item.altSongTitle || ""
                                 return(
-                                  <TouchableOpacity onPress={()=>{navigation.navigate('SongScreen',{song,img,artist,url,duration,id});}} key={i}>
+                                  <TouchableOpacity onPress={()=>{navigation.navigate('SongScreen',{song,img,artist,url,duration,id,altArtistName,altSongTitle});}} key={i}>
                                     <FastImage
                                       style={styles.img}
                                       source={{
@@ -157,7 +172,7 @@ export default function HomeScreen ({navigation}) {
                                       }}
                                       resizeMode={FastImage.resizeMode.contain}
                                     />
-                                    <View style={{width:height<=667?90:130,alignItems:'center'}}>
+                                    <View style={{width:height<=667?90:tuckedTitle,alignItems:'center'}}>
                                       <TextTicker
                                         style={styles.text}
                                         duration={4000}
@@ -169,8 +184,10 @@ export default function HomeScreen ({navigation}) {
                                         repeatSpacer={10}
                                         marqueeDelay={3000}
                                       >
+                                      {/* {altArtistName && language() === 'en' ? altArtistName : artist} */}
                                       {artist}
                                       </TextTicker>
+                                      {/* <Text style={styles.text}>{altSongTitle && language() === 'en' ? altSongTitle : song}</Text> */}
                                       <Text style={styles.text}>{song}</Text>
                                     </View>
                                   </TouchableOpacity>
@@ -198,22 +215,23 @@ const styles = StyleSheet.create({
   },
   title:{
     color:'white',
-    fontSize:height<=667?15:20,
+    fontSize:height<=667?15:titleSize,
     fontWeight:'bold',
     textTransform:'capitalize',
     marginVertical:height<=667?10:15,
     textAlign:'center'
   },
   img:{
-    width:height<=667?90:135,
-    height:height<=667?90:135,
+    width:height<=667?90:imageSize,
+    height:height<=667?90:imageSize,
     marginHorizontal:height<540?5:10,
     marginVertical:2
   },
   text:{
-    fontSize:height<=667?10:13,
+    fontSize:height<=667?10:textSize,
     fontWeight:'bold',
     color:'white',
     textAlign:'center',
+    textTransform:'capitalize'
   }
 });

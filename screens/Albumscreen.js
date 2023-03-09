@@ -1,11 +1,21 @@
 import React,{useEffect,useState,useContext} from "react";
-import { Text, View, StyleSheet,TouchableOpacity,ScrollView} from 'react-native';
+import { Text, View, StyleSheet,TouchableOpacity,ScrollView,Dimensions} from 'react-native';
 import firestore from '@react-native-firebase/firestore'
 import Icon from 'react-native-vector-icons/Ionicons';
 import TrackPlayer, { usePlaybackState }  from 'react-native-track-player';
 import FastImage from 'react-native-fast-image';
 import { QueueManagementContext } from "../shared/queueManagementContext";
-    
+import { language } from "../utils/langCheck";
+import { SongScreenText } from "../types";
+
+const {height,width}=Dimensions.get('window');
+
+const bigImageSize = height > 1000 ? 200 : 150;
+const imageSize = height > 1000 ? 80 : 50;
+const iconSize = height > 1000 ? 50 : 30;
+const textSize = height > 1000 ? 17 : 12;
+const titleSize = height > 1000 ? 20 : 17;
+
 export default function AlbumScreen ({route}) {
   const [data,setData]=useState([])
   const playbackState = usePlaybackState();
@@ -83,7 +93,7 @@ const playPressed = async(item,i)=>{
         <View>
           {/* <Image source={{uri:route.params.img}} style={{width:150,height:150}}/> */}
           <FastImage
-            style={{width:150,height:150}}
+            style={{width:bigImageSize,height:bigImageSize}}
             source={{
                 uri: route.params.img,
                 priority: FastImage.priority.high,
@@ -96,7 +106,7 @@ const playPressed = async(item,i)=>{
                 <TouchableOpacity style={styles.button} 
                 onPress={playTheListPressed}
                 >
-                    <Text style={styles.buttonText}>Play</Text>
+                    <Text style={styles.buttonText}>{SongScreenText[`${language()}-playall`]}</Text>
                 </TouchableOpacity>
         </View>
 
@@ -115,18 +125,18 @@ const playPressed = async(item,i)=>{
                                 <TouchableOpacity 
                                 onPress={()=>playPressed(item,index)}
                                 >
-                                    <Icon name='play' style={{color:'#fff'}} size={height<=540?20:30} />
+                                    <Icon name='play' style={{color:'#fff'}} size={height<=540?20:iconSize} />
                                 </TouchableOpacity>
                                 
                             </View>
                             <View style={{flex:1,alignItems:'flex-end',marginRight:10}}>
                             
-                                <Text style={{color:'#fff',fontWeight:'bold'}} >{item.title}</Text>
-                                <Text style={{color:'#6d6d6d',fontWeight:'bold'}} >{item.artist}</Text>
+                                <Text style={{color:'#fff',fontWeight:'bold',fontSize:titleSize}} >{item.title}</Text>
+                                <Text style={{color:'#6d6d6d',fontWeight:'bold',fontSize:textSize}} >{item.artist}</Text>
                             </View>
                             
                             <FastImage
-                              style={{width:50,height:50,marginRight:10}}
+                              style={{width:imageSize,height:imageSize,marginRight:10}}
                               source={{
                                   uri: item.artwork,
                                   priority: FastImage.priority.high,
@@ -174,7 +184,7 @@ const playPressed = async(item,i)=>{
     button:{
       backgroundColor:'#1db954',
       padding:13,
-      width:150,
+      width:180,
       marginTop:10,
       borderRadius:50,
       marginHorizontal:10
@@ -183,7 +193,7 @@ buttonText:{
       color:'#fff',
       textAlign:'center',
       fontWeight:'bold',
-      fontSize:15,
+      fontSize:titleSize,
       textTransform:'uppercase'
   }
   })

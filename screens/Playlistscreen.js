@@ -5,9 +5,13 @@ import firebase from '@react-native-firebase/app';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Animated from 'react-native-reanimated';
 import BottomSheet from 'reanimated-bottom-sheet';
+import { CreatePList, Texts } from "../types";
+import { language } from "../utils/langCheck";
 
 
-const {height}=Dimensions.get('window')
+const {height}=Dimensions.get('window');
+
+const textSize = height > 1000 ? 18 : 15;
 
 export default function PlaylistScreen ({navigation}) {
 
@@ -110,7 +114,7 @@ const createPressed = ()=>{
          <View style={{marginTop:height<=544?30:50,alignItems:'center'}}>
             <TextInput
                 placeholderTextColor='gray'
-                placeholder='اسم قائمة التشغيل'
+                placeholder={Texts[`${language()}-plist-name`]}
                 value={value}
                 onChangeText={(text)=>setValue(text)}
                 style={{
@@ -126,7 +130,7 @@ const createPressed = ()=>{
          </View>
          <View style={{alignItems:'center',marginTop:20}}>
             <TouchableOpacity style={styles.addButton} onPress={createPressed}>
-                        <Text style={{color:'#fff',fontWeight:'bold',fontSize:height<=544?11:15}}>انشاء</Text>
+                        <Text style={{color:'#fff',fontWeight:'bold',fontSize:height<=544?11:15}}>{CreatePList[`${language()}-create`]}</Text>
                     </TouchableOpacity>
          </View>
         </View>
@@ -168,7 +172,7 @@ const createPressed = ()=>{
                 marginBottom:10
               }}
             >
-              اضافه قائمة تشغيل جديده ٠٠٠
+            {language() === 'ar' ? 'اضافه قائمه تشغيل جديده...': 'Add new playlist ... '}
             </Text>
 
           </View>
@@ -207,15 +211,15 @@ const createPressed = ()=>{
                 
                 
                 <Icon name='trash' style={{color:'#fff',margin:15,fontSize:height<=544?20:30}} />
-                <Text style={styles.modalText}>هل فعلا تريد مسح هذه القائمه ؟</Text>
+                <Text style={styles.modalText}>{Texts[`${language()}-sure`] }</Text>
                 
                <View style={{flexDirection:'row'}} >
                
                 <TouchableOpacity onPress={()=>setOpen(false)}  style={styles.button2} >
-                  <Text style={{color:'#fff',fontWeight:'bold',fontSize:height<=544?9:15}} >لا</Text>
+                  <Text style={{color:'#fff',fontWeight:'bold',fontSize:height<=544?9:15}} >{Texts[`${language()}-no`]}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={deleteList}  style={styles.button} >
-                  <Text style={{color:'#fff',fontWeight:'bold',fontSize:height<=544?9:15}} >نعم</Text>
+                  <Text style={{color:'#fff',fontWeight:'bold',fontSize:height<=544?9:15}} >{Texts[`${language()}-yes`]}</Text>
                 </TouchableOpacity>
                </View>
             </View>
@@ -241,7 +245,7 @@ const createPressed = ()=>{
                          </View>
                         
                        
-                           <Text style={{color:'#fff',fontWeight:'bold',}}>{item}</Text>
+                           <Text style={{color:'#fff',fontWeight:'bold',fontSize:textSize}}>{item}</Text>
                          
                          
                      </TouchableOpacity>
