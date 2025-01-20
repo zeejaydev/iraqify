@@ -59,7 +59,8 @@ const App = () => {
 
  const VCheck = async ()=>{
    try {
-    let updateNeeded = await VersionCheck.needUpdate()
+    // let updateNeeded = await VersionCheck.needUpdate()
+    let updateNeeded = false
 
     let url = await VersionCheck.getStoreUrl({ appID: Platform.OS==='ios'?'1553219762':'com.iraqify' }).then(res=>{
       return res

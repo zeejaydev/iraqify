@@ -1,16 +1,28 @@
 import React,{useEffect,useState} from "react";
-import {View,Text,StyleSheet,Image,TouchableOpacity,ScrollView,Dimensions,ActivityIndicator} from 'react-native';
+import {View,Text,StyleSheet,Image,TouchableOpacity,
+    ScrollView,Dimensions,ActivityIndicator} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import TrackPlayer, { usePlaybackState }  from 'react-native-track-player';
 import database from '@react-native-firebase/database';
 import FastImage from 'react-native-fast-image';
+import { SongScreenText } from "../types";
+import { language } from "../utils/langCheck";
 
-const {height}=Dimensions.get('window')
+const {height}=Dimensions.get('window');
+
+const iconSize = height > 1000 ? 30 : 20;
+const textSize = height > 1000 ? 18 : 15;
+const smallTextSize = height > 1000 ? 15 : 12;
+const titleSize = height > 1000 ? 19 : 17;
+const headerSize = height > 1000 ? 10/3 : 10/6;
+const bigImageSize = height > 1000 ? 200 : 150;
+const imageSize = height > 1000 ? 80 : 40;
+const bgSize = height > 1000 ? 80 : 40 ;
 
 export default function SongScreen ({route,navigation}){
 
     const playbackState = usePlaybackState();
-    
+    const en = language() === "en" ? true : false;
     const [data,setData]=useState([])
     const [loading,setloading]=useState(false)
 
@@ -30,13 +42,19 @@ export default function SongScreen ({route,navigation}){
 
   },[])
 
+    // Futuer update to include english artist and song names
+    // const artistName = route.params.altArtistName && en ? route.params.altArtistName : route.params.artist;
+    // const songName = route.params.altSongTitle && en ? route.params.altSongTitle : route.params.song;
+    const artistName = route.params.artist;
+    const songName = route.params.song;
+
     const togglePlay = async () => {
         if(playbackState  === 'idle'){
             await TrackPlayer.add({
                 id: route.params.id,
                 url: route.params.url,
-                title: route.params.song,
-                artist: route.params.artist,
+                title: songName,
+                artist: artistName,
                 artwork: route.params.img,
                 duration: route.params.duration,
                 // pitchAlgorithm: 'PITCH_ALGORITHM_MUSIC'
@@ -49,8 +67,8 @@ export default function SongScreen ({route,navigation}){
             await TrackPlayer.add({
                 id: route.params.id,
                 url: route.params.url,
-                title: route.params.song,
-                artist: route.params.artist,
+                title: songName,
+                artist: artistName,
                 artwork: route.params.img,
                 duration: route.params.duration,
                 // pitchAlgorithm: 'PITCH_ALGORITHM_MUSIC'
@@ -143,8 +161,8 @@ export default function SongScreen ({route,navigation}){
     const TrackObj = {
         id: route.params.id,
         url: route.params.url,
-        title: route.params.song,
-        artist: route.params.artist,
+        title: songName,
+        artist: artistName,
         artwork: route.params.img,
         duration: route.params.duration
     }
@@ -154,7 +172,7 @@ export default function SongScreen ({route,navigation}){
             <ScrollView>
             <View style={styles.header}>
                 <Image source={{uri:route.params.img}} style={styles.img}/>
-                <Text style={styles.text}>{route.params.artist}</Text>
+                <Text style={styles.text}>{artistName}</Text>
                 
                 {
                     loading ? <View style={styles.button}>
@@ -162,7 +180,7 @@ export default function SongScreen ({route,navigation}){
                 </View>:
                 <View>
                 <TouchableOpacity style={styles.button} onPress={playAll}>
-                    <Text style={styles.buttonText}>تشغيل جميع الاغاني</Text>
+                    <Text style={styles.buttonText}>{SongScreenText[`${language()}-playall`]}</Text>
                 </TouchableOpacity>
                 </View>
                 }
@@ -186,8 +204,8 @@ export default function SongScreen ({route,navigation}){
                         <View >
                             <TouchableOpacity style={{padding:5}} onPress={togglePlay}>
 
-                                <Text style={styles.songTitle}>{route.params.song}</Text>
-                                <Text style={styles.songText}>{route.params.artist}</Text>
+                                <Text style={styles.songTitle}>{songName}</Text>
+                                <Text style={styles.songText}>{artistName}</Text>
 
                             </TouchableOpacity>
                         </View>
@@ -202,19 +220,19 @@ export default function SongScreen ({route,navigation}){
                 </View>
 
             <View style={styles.otherSongs}>
-                <Text style={{...styles.text,textAlign:'center'}}>اغاني اخرى ل{route.params.artist}</Text>
+                <Text style={{...styles.text,textAlign:'center'}}>{`${SongScreenText[`${language()}-other`]}`}</Text>
                 
                 {
                     data.filter(item=>{
-                        if(item.artistName.includes(route.params.artist)){
+                        if(item.artistName.includes(artistName) || item.artistName){
                             return item
-                        }else if(item.artistName===route.params.artist){
+                        }else if(item.artistName===artistName){
                             return item
                         }else{
                             return null
                         }
                         
-                    }).filter(item=>item.songName!==route.params.song?item:null).map((item)=>{
+                    }).filter(item=>(item.songName!==songName && item.altSongName!==songName)?item:null).map((item)=>{
                         const TrackObj = {
                             id: item.id,
                             url: item.songUrl,
@@ -256,15 +274,15 @@ export default function SongScreen ({route,navigation}){
                                     }}
                                     resizeMode={FastImage.resizeMode.contain}
                                 >
-                                <View style={{height:height<=600?30:40,backgroundColor:'rgba(0,0,0,0.3)',justifyContent:'center',alignItems:'center'}}>
-                                    <Icon name='play' style={{color:'rgba(255,255,255,0.7)',fontSize:height<=600?15:20}} />
+                                <View style={{height:height<=600?30:bgSize,backgroundColor:'rgba(0,0,0,0.3)',justifyContent:'center',alignItems:'center'}}>
+                                    <Icon name='play' style={{color:'rgba(255,255,255,0.7)',fontSize:height<=600?15:iconSize}} />
                                 </View>
                                 </FastImage>
                                 {/* </ImageBackground> */}
                             </TouchableOpacity>
                         </View>
                         )
-                    })
+                    }).reverse()
                 }
                 
             </View>
@@ -282,7 +300,7 @@ const styles = StyleSheet.create({
         backgroundColor:'#121212',
     },
     header:{
-        aspectRatio:height<=600?10/4.5:10/6,
+        aspectRatio:height<=600?10/4.5:headerSize,
         alignItems: 'center', 
         
     },
@@ -297,29 +315,32 @@ const styles = StyleSheet.create({
         justifyContent:'space-between',
     },
     img:{
-        width:height<=600?100:160,
-        height:height<=600?100:160,
+        width:height<=600?100:bigImageSize,
+        height:height<=600?100:bigImageSize,
         marginVertical:height<=600?2:10
     },
     text:{
-        fontSize:height<=600?15:17,
+        fontSize:height<=600?15:titleSize,
         fontWeight:'500',
-        color:'#b3b3b3'
+        color:'#b3b3b3',
+        textTransform:'capitalize'
     },
     songTitle:{
         textAlign:'right',
         color:'#fff',
         marginHorizontal:height<=600?15:20,
         marginVertical:5,
-        fontSize:height<=600?12:15,
-        fontWeight:'bold'
+        fontSize:height<=600?12:textSize,
+        fontWeight:'bold',
+        textTransform:'capitalize'
     },
     songText:{
         textAlign:'right',
         color:'#b2b2b2',
         marginHorizontal:height<=600?15:20,
-        fontSize:height<=600?10:12,
-        fontWeight:'bold'
+        fontSize:height<=600?10:smallTextSize,
+        fontWeight:'bold',
+        textTransform:'capitalize'
     },
     newSong:{
         flexDirection:'row',
@@ -345,7 +366,7 @@ const styles = StyleSheet.create({
         color:'#fff',
         textAlign:'center',
         fontWeight:'bold',
-        fontSize:height<=600?12:15,
+        fontSize:height<=600?12:textSize,
         textTransform:'uppercase'
     },
     otherSongs:{
@@ -355,11 +376,12 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         color:'#fff',
         fontWeight:'bold',
-        fontSize:height<=600?12:15
+        fontSize:height<=600?12:textSize,
+        textTransform:'capitalize'
     },
     otherSongsImg:{
-        width:height<=600?30:40,
-        height:height<=600?30:40,
+        width:height<=600?30:imageSize,
+        height:height<=600?30:imageSize,
         marginRight:10
     },
     addSong:{
@@ -369,7 +391,7 @@ const styles = StyleSheet.create({
     },  
     icon:{
         color:'#fff',
-        fontSize:height<=600?18:23,
+        fontSize:height<=600?18:iconSize,
         justifyContent:'center',
         alignItems:'center'
     }

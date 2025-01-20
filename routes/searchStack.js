@@ -1,8 +1,10 @@
 import React from 'react';
 import { Easing,StyleSheet} from "react-native";
-import { createStackNavigator,TransitionSpecs,CardStyleInterpolators } from '@react-navigation/stack';
+import { createStackNavigator,CardStyleInterpolators } from '@react-navigation/stack';
 import SearchScreen from "../screens/Searchscreen";
 import AddToPlaylist from '../screens/AddToPlaylistscreen';
+import { Texts } from '../types';
+import { language } from '../utils/langCheck';
 
 
 
@@ -34,7 +36,7 @@ export default function SearchStack(){
             
         >
           <Stack.Screen 
-            name="Search" 
+            name="Search Screen" 
             component={SearchScreen}
             options={{
                 // header:()=>{return(<Header/>)}
@@ -48,7 +50,7 @@ export default function SearchStack(){
             options={{
                 headerTintColor:'#fff',
               headerBackTitleVisible:false,
-              headerTitle:'قوائم التشغيل',
+              headerTitle: Texts[`${language()}-playlists`],
               headerTitleAlign:'center',
               headerTitleStyle:{
                 color:'#b3b3b3',

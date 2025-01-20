@@ -6,6 +6,8 @@ import BottomSheet from 'reanimated-bottom-sheet';
 import Icon from 'react-native-vector-icons/Ionicons';
 import firestore from '@react-native-firebase/firestore';
 import firebase from '@react-native-firebase/app';
+import { CreatePList, Texts } from "../types";
+import { language } from "../utils/langCheck";
 
 
 const {height}=Dimensions.get('window')
@@ -100,7 +102,7 @@ useEffect(()=>{
          <View style={{marginTop:height<=544?30:50,alignItems:'center'}}>
             <TextInput
                 placeholderTextColor='gray'
-                placeholder='اسم قائمة التشغيل'
+                placeholder={Texts[`${language()}-plist-name`]}
                 value={value}
                 onChangeText={(text)=>setValue(text)}
                 style={{
@@ -112,11 +114,11 @@ useEffect(()=>{
                     color:'#fff'
                 }}
             />
-            <Text style={{color:'red',marginVertical:5}}>{emptyPlaylistNameError?'نسيت اسم قائمة التشغيل':null}</Text>
+            <Text style={{color:'red',marginVertical:5}}>{emptyPlaylistNameError?Texts[`${language()}-forgot-plist-name`]:null}</Text>
          </View>
          <View style={{alignItems:'center',marginTop:20}}>
             <TouchableOpacity style={styles.addButton} onPress={createPressed}>
-                        <Text style={{color:'#fff',fontWeight:'bold',fontSize:height<=544?11:15}}>انشاء</Text>
+                        <Text style={{color:'#fff',fontWeight:'bold',fontSize:height<=544?11:15}}>{CreatePList[`${language()}-create`]}</Text>
                     </TouchableOpacity>
          </View>
         </View>
@@ -143,7 +145,7 @@ useEffect(()=>{
                     <View style={styles.centeredView}>
                         <View style={styles.modalView}>
                             <Icon name="musical-notes-outline" style={{color:'#fff',fontSize:height<=544?50:100}} />
-                            <Text style={styles.modalText}>تمت اضافه الاغنيه بنجاح</Text>
+                            <Text style={styles.modalText}>{Texts[`${language()}-song-was-added`]}</Text>
                         </View>
                        
                     </View>
@@ -161,7 +163,7 @@ useEffect(()=>{
 
                     <View style={styles.addButtonContainer}>
                         <TouchableOpacity style={styles.addButton} onPress={()=>addPlaylist()}>
-                            <Text style={{color:'#fff',fontWeight:'bold',fontSize:height<=544?11:15}}>انشاء قائمة تشغيل</Text>
+                            <Text style={{color:'#fff',fontWeight:'bold',fontSize:height<=544?11:15}}>{CreatePList[`${language()}-create-plist`]}</Text>
                         </TouchableOpacity>
                     </View>
 

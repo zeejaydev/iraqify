@@ -1,16 +1,15 @@
-import React,{useState,useEffect, useRef} from 'react';
-import { Easing,StyleSheet,View,Text,Image,TouchableOpacity,Dimensions} from "react-native";
+import React from 'react';
+import { StyleSheet,Dimensions} from "react-native";
 import { createStackNavigator,CardStyleInterpolators } from '@react-navigation/stack';
 import SongScreen from '../screens/Songscreen';
 import HomeScreen from "../screens/Homescreen";
 import AlbumScreen from '../screens/Albumscreen';
 import AddToPlaylist1 from '../screens/AddToPlaylistscreen1';
 import Icon from 'react-native-vector-icons/Ionicons';
-import TrackPlayer  from 'react-native-track-player';
-import auth from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore';
-import { LoginManager } from 'react-native-fbsdk';
-import FastImage from 'react-native-fast-image';
+import { Texts } from '../types';
+import HeaderLeft from '../componentes/LeftHeader';
+import HeaderRight from '../componentes/HeaderRight';
+import { language } from '../utils/langCheck';
 
 const Stack = createStackNavigator();
 const {height}=Dimensions.get('window')
@@ -19,101 +18,21 @@ const {height}=Dimensions.get('window')
 
 export default function StackNav({navigation}){
 
-    const [username,setusername] = useState({})
-    const [showDropDown,setShowDropDown] = useState(false)
-    const user = auth().currentUser;
-
-    const handleDeleteAccount = ()=>{
-        setShowDropDown(!showDropDown)
-        user.delete()
-        StopSongs()
-    } 
-    useEffect(()=>{
-        const subscribe = firestore().collection('Users').doc(user.uid).onSnapshot((querySnapshot)=> {
-            try {
-                if(querySnapshot.data()){
-                    setusername(querySnapshot.data())
-                    
-                }else{
-                    setusername('')
-                    
-                }
-            } catch (error) {
-                console.log(error)
-            }
-        });
-      return subscribe
-    },[])
-
-    function HeaderLeft (){
-        return(
-            <View
-            // onPress={()=>navigation.navigate('Profile')} 
-            style={{marginLeft:10}}
-            >
-         
-                <TouchableOpacity onPress={()=>setShowDropDown(!showDropDown)}>
-                    <View style={{flexDirection:'row',alignItems:'center'}} >
-                        {user.photoURL?
-                        <FastImage
-                        style={styles.userImg}
-                        source={{
-                            uri: `${user.photoURL}?width=200`,
-                            priority: FastImage.priority.high,
-                        }}
-                        resizeMode={FastImage.resizeMode.contain}
-                    />
-                        :<Icon name='person-circle-outline' style={styles.userIcon}/>}
-                        <Text style={styles.userGreetings} >hello {username.name}</Text>
-
-                    </View>
-                </TouchableOpacity>
-                {showDropDown && <TouchableOpacity onPress={handleDeleteAccount} ><View style={styles.dropDownMenu}>
-                        <Text style={{color:'white',fontWeight:'bold',width:'100%'}}>Delete Account</Text>    
-                    </View></TouchableOpacity>}
-            </View>
-        )
-    }
-
-    // const StopSongs = ()=>{
-    //     TrackPlayer.stop()
-    //     TrackPlayer.destroy()
-    // }
-
-
-    function HeaderRight (){
-        return(
-            <TouchableOpacity onPress={()=>{auth().signOut().then(()=>LoginManager.logOut() )}} >
-                <View style={{flexDirection:'row',alignItems:'center'}}>
-                    
-                    <Text style={styles.userSignOutText}>خروج</Text>
-                    <Icon name='log-out-outline' style={styles.userSignOutIcon}/>
-                </View>
-                
-            </TouchableOpacity>
-        )
-    }
-
-
-
     return (
-        <Stack.Navigator 
-            
+        <Stack.Navigator
             screenOptions={{
                 headerMode:'screen',
                 gestureEnabled:true,
                 gestureDirection:'horizontal',
                 cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS
-            }}
-            
-        >
-          <Stack.Screen 
-            name="Home" 
+            }}>
+            <Stack.Screen 
+            name="Home Screen" 
             component={HomeScreen}
             options={{
                 headerShown:true,
                 headerTintColor:'#fff',
-                headerLeft:()=>{return(<HeaderLeft/>)},
+                headerLeft:()=>{return(<HeaderLeft navigation={navigation}/>)},
                 headerRight:()=>{return(<HeaderRight/>)},
                 headerTitle:'',
                 headerStyle: {
@@ -122,10 +41,10 @@ export default function StackNav({navigation}){
                     borderWidth:0,
                     borderColor:'#121212',
                     shadowColor:'none'
-                  }
-              }}
+                    }
+                }}
         />
-          <Stack.Screen 
+            <Stack.Screen 
             name="SongScreen" 
             component={SongScreen}
             options={{
@@ -137,7 +56,7 @@ export default function StackNav({navigation}){
                     shadowColor:'none',
                     borderBottomColor:'#121212'
                 }
-              }}
+                }}
         />
         
         <Stack.Screen 
@@ -146,18 +65,18 @@ export default function StackNav({navigation}){
             options={{
                 headerTintColor:'#fff',
                 headerBackTitleVisible:false,
-                headerTitle:'قوائم التشغيل',
+                headerTitle:Texts[`${language()}-playlists`],
                 headerTitleAlign:'center',
                 headerTitleStyle:{
                     color:'#b3b3b3',
                     fontSize:15,
                     fontWeight:'bold'
                 },
-              headerStyle:{
-                  backgroundColor:'#121212',
-                  shadowColor:'none',
-              }
-              }}
+                headerStyle:{
+                    backgroundColor:'#121212',
+                    shadowColor:'none',
+                }
+                }}
         />
         <Stack.Screen 
             name="AlbumScreen" 
@@ -172,58 +91,22 @@ export default function StackNav({navigation}){
                     fontSize:15,
                     fontWeight:'bold'
                 },
-              headerStyle:{
-                  backgroundColor:'#121212',
-                  shadowColor:'none',
-                  borderBottomColor:'none',
-                  borderBottomWidth:0,
-              }
-              }} 
+                headerStyle:{
+                    backgroundColor:'#121212',
+                    shadowColor:'none',
+                    borderBottomColor:'none',
+                    borderBottomWidth:0,
+                }
+                }} 
         />
         
         </Stack.Navigator>
-      );
+    );
 }
+
 const styles = StyleSheet.create({
     icon:{
         marginLeft:10,
         color:'#fff',    
-    },
-    userImg:{
-        width:height<=540?25:45,
-        height:height<=540?25:45,
-        borderRadius:50
-        
-    },
-    userIcon:{
-        fontSize:height<=540?25:40,
-        color:'#fff'
-    },
-    userSignOutIcon:{
-        color:'#fff',
-        fontSize:height<=540?17:25,
-        marginRight:5
-    },
-    userSignOutText:{
-        color:'#fff',
-        marginRight:5,
-        textTransform:'capitalize',
-        fontWeight:'bold',
-        fontSize:height<=540?9:15,
-    },
-    userGreetings:{
-        fontSize:height<=540?9:15,
-        color:'#fff',
-        marginLeft:5,
-        textTransform:'capitalize',
-        fontWeight:'bold'
-    },
-    dropDownMenu:{
-        position:'absolute',
-        top:0,
-        backgroundColor:'red',
-        width:'100%',
-        paddingVertical:10,
-        paddingHorizontal:10,
-    }
-    })
+    }   
+})

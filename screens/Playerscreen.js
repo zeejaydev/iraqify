@@ -1,10 +1,11 @@
 import React,{useEffect,useState,useContext} from 'react';
-import { View,Text, StyleSheet,Image,Dimensions,TouchableOpacity } from "react-native";
+import { View,Text, StyleSheet,Image,Dimensions,TouchableOpacity, Platform } from "react-native";
 import TrackPlayer,{useProgress,usePlaybackState,State,RepeatMode,useTrackPlayerEvents,Event}  from 'react-native-track-player';
 import { TrackContext } from "../shared/Trackcontext";
 import { QueueManagementContext } from "../shared/queueManagementContext";
 import Slider from '@react-native-community/slider';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { language } from '../utils/langCheck';
 export default function PlayerScreen(){
 
     const [trackInfo,setTrackInfo]=useContext(TrackContext);
@@ -188,6 +189,7 @@ export default function PlayerScreen(){
         },
         header:{
             alignItems:'center',
+            justifyContent:'center',
             aspectRatio:sizes.aspectR,
             padding:0,
             shadowColor: "#000",
@@ -208,19 +210,20 @@ export default function PlayerScreen(){
         title:{
             alignItems:'center',
             flex:1,
-            justifyContent:'center'
+            justifyContent:'center',
+            textTransform:'capitalize'
         },
         progressBar:{
             aspectRatio:10/3,
             paddingTop:'10%',
             justifyContent:'center',
-            flexDirection:'row',
+            flexDirection:language() === 'ar' && Platform.OS === 'android'?'row-reverse':'row',
         },
         progress: {
             height: 40,
             minWidth: "60%",
             maxWidth:"70%",
-            flexDirection: "row",
+            flexDirection:language() === 'ar' && Platform.OS === 'android'?'row-reverse':'row',
             marginHorizontal:5,
             justifyContent:'center'
           },
@@ -265,8 +268,8 @@ export default function PlayerScreen(){
                     
                     <View style={styles.titleContainer}>
                         <View style={styles.title}>
-                            <Text style={{color:'white',fontWeight:'bold',fontSize:height<=600?11:17,marginVertical:5}}>{currentTrack.songTitle}</Text>
-                            <Text style={{color:'#b3b3b3',fontWeight:'bold',fontSize:height<=600?11:17}}>{currentTrack.artistName}</Text>
+                            <Text style={{color:'white',fontWeight:'bold',fontSize:height<=600?11:17,marginVertical:5,textTransform:'capitalize'}}>{currentTrack.songTitle}</Text>
+                            <Text style={{color:'#b3b3b3',fontWeight:'bold',fontSize:height<=600?11:17,textTransform:'capitalize'}}>{currentTrack.artistName}</Text>
                         </View>
                     </View>
                     
@@ -289,6 +292,7 @@ export default function PlayerScreen(){
                                             value={sliderValue}
                                             minimumTrackTintColor='grey'
                                             maximumTrackTintColor='#fff'
+                                            inverted={(language() === 'ar' && Platform.OS === 'android')?true:false}
                                             onSlidingStart={slidingStarted}
                                             onSlidingComplete={slidingCompleted}
                                             tapToSeek
