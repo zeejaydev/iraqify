@@ -5,7 +5,7 @@ import {TrackInfoProvider} from './shared/Trackcontext';
 import {QueueManagementProvider} from './shared/queueManagementContext';
 import {PlaylistInfoProvider} from './shared/playlistContext';
 import MainNav from "./routes/mainNav";
-import SplashScreen from 'react-native-splash-screen';
+// import SplashScreen from 'react-native-splash-screen';
 import VersionCheck from 'react-native-version-check';
 import TrackPlayer,{ Capability, AppKilledPlaybackBehavior } from 'react-native-track-player';
 
@@ -46,9 +46,9 @@ const App = () => {
  
  
   useEffect(() => {
-     setTimeout(() => {
-      SplashScreen.hide();
-     }, 150);
+    //  setTimeout(() => {
+    //   SplashScreen.hide();
+    //  }, 150);
      setupIfNecessary();
  }, []);
 
